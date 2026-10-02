@@ -114,3 +114,10 @@ Paste this into a new chat. It is a glanceable drum-tracking remote for REAPER, 
 - Licensing: MIT for project code; credits section in the README covers `main.js` (Cockos, unmodified), Roboto Condensed (Apache 2.0, Google), the wood texture (the owner states it is a free composite) and a trademark notice.
 - Known CI warning (not a failure): GitHub reports Node 20 as deprecated for `actions/checkout@v4` and `actions/setup-node@v4`; bump the action versions when convenient.
 - To run locally (needs Node 20+): `npm install`, `npx playwright install chromium`, `npm test`.
+
+## 10. Releases (added after section 9)
+- **v1.0.0** is published (zip plus `.sha256`). It was built by hand from a Windows working copy, so its text files have CRLF line endings. Functionally identical to the workflow's output, which uses LF. Re-release as v1.0.1 if clean LF text files matter.
+- **Automated releases**: `.github/workflows/release.yml` runs when a `v*` tag is pushed. It runs the static checks and the smoke test, builds `reaper-kit-remote-<version>.zip` and a `.sha256` via `scripts/package-release.sh`, and publishes a GitHub Release with generated notes. A failing test blocks the release.
+- To release: `git tag v1.x.y && git push origin v1.x.y`. A manual run of the workflow (Actions tab) builds the zip and uploads it as an artifact without publishing; this was verified (static checks, smoke test and packaging all passed; the publish step was skipped).
+- The zip layout is `reaper_www_root/` (copy its contents into REAPER's folder), `INSTALL.txt` (from `scripts/INSTALL.txt`, version filled in, CRLF), `LICENSE`, `extras/spec-export.jsx`.
+- The README has a "Download the latest release" link at the top and a "Releasing" section.
