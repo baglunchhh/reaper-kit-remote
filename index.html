@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1180, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<title>Kit Remote</title>
+<script src="main.js"></script>
+<style>
+
+@font-face {
+  font-family: 'Roboto Condensed';
+  src: url('fonts/RobotoCondensed-Variable.woff2') format('woff2');
+  font-weight: 100 900;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --bg: #000000;
+  --fg: #ffffff;
+  --meter-border: #808080;
+  --meter-border-width: 2px;
+
+  --col-loop: #353637;
+  --col-record: #ee3b40;
+  --col-play: #39b54a;
+  --col-stop: #cbdb2a;
+  --col-rewind: #60cdf6;
+  --col-marker: #00aeef;
+  --col-forward: #60cdf6;
+  --col-undo: #f172ac;
+  --col-metronome: #f5a623;
+
+  --btn-stroke-width: 5px;
+  --btn-radius-square: 23px;
+  --btn-radius-pill: 20px;
+
+  --meter-green: #39b54a;
+  --meter-yellow: #cbdb2a;
+  --meter-red: #ee3b40;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  background: var(--bg);
+  overflow: hidden;
+  font-family: 'Roboto Condensed', sans-serif;
+}
+
+.viewport {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  width: 100dvw;  /* iOS Safari's 100vh/vw assumes chrome is hidden, causing overflow/scroll until it is; dvw/dvh track the real visible area */
+  height: 100dvh;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.stage {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 1180px;
+  height: 820px;
+  transform-origin: center center;
+  background: var(--bg);
+}
+
+.el { position: absolute; }
+
+/* ---------- header ---------- */
+
+#btn-metronome {
+  left: 8.39%;
+  top: 10%;
+  width: 30%;
+  height: 4.88%;
+  box-sizing: border-box;
+  background: transparent;
+  border-style: solid;
+  border-width: var(--btn-stroke-width);
+  border-color: var(--col-metronome);
+  border-radius: var(--btn-radius-pill);
+  color: var(--col-metronome);
+  font-weight: 700;
+  font-size: 24px;
+  letter-spacing: 0.04em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  --flash-color: var(--col-metronome);
+}
+#btn-metronome:active {
+  filter: brightness(1.4);
+}
+#btn-metronome.is-active {
+  background: var(--col-metronome);
+  color: #000;
+}
+
+#timecode {
+  left: 65.34%;
+  top: 8.58%;
+  width: 23.82%;
+  height: 7.49%;
+  color: var(--fg);
+  font-weight: 500;
+  font-size: 48px;
+  letter-spacing: 0.02em;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  white-space: nowrap;
+}
+
+/* ---------- transport buttons ---------- */
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border-style: solid;
+  border-width: var(--btn-stroke-width);
+  box-sizing: border-box;
+  top: 19.73%;
+  height: 10.73%;
+}
+
+.btn:active {
+  filter: brightness(1.4);
+}
+
+.btn-square {
+  width: 7.46%;
+  border-radius: var(--btn-radius-square);
+}
+
+.btn svg {
+  width: 55%;
+  height: 55%;
+}
+
+#btn-loop    { left: 8.39%;  border-color: var(--col-loop);    --flash-color: var(--col-loop); }
+#btn-play    { left: 32.8%;  border-color: var(--col-play);    --flash-color: var(--col-play); }
+#btn-stop    { left: 40.93%; border-color: var(--col-stop);    --flash-color: var(--col-stop); }
+#btn-rewind  { left: 57.2%;  border-color: var(--col-rewind);  --flash-color: var(--col-rewind); }
+#btn-marker  { left: 65.35%; border-color: var(--col-marker);  --flash-color: var(--col-marker); }
+#btn-forward { left: 73.49%; border-color: var(--col-forward); --flash-color: var(--col-forward); }
+#btn-undo    { left: 81.61%; border-color: var(--col-undo);    --flash-color: var(--col-undo); }
+
+#btn-record {
+  left: 16.53%;
+  width: 15.59%;
+  border-radius: var(--btn-radius-pill);
+  border-color: var(--col-record);
+}
+
+#btn-record.is-recording {
+  background: var(--col-record);
+}
+#btn-record.is-recording .icon-dot {
+  fill: #000;
+}
+
+#btn-play.is-active {
+  background: var(--col-play);
+}
+#btn-play.is-active svg path {
+  fill: #000;
+}
+
+#btn-loop.is-active {
+  background: var(--col-record);
+  border-color: var(--col-record);
+}
+#btn-loop.is-active svg {
+  stroke: #000;
+}
+
+@keyframes btnFlashBg {
+  0% { background: var(--flash-color); }
+  100% { background: transparent; }
+}
+@keyframes btnFlashIconFill {
+  0% { fill: #000; }
+  100% { fill: var(--flash-color); }
+}
+@keyframes btnFlashIconStroke {
+  0% { stroke: #000; }
+  100% { stroke: var(--flash-color); }
+}
+
+.btn.is-flashing {
+  animation: btnFlashBg 350ms ease-out;
+}
+
+/* fill-based icons: stop, rewind, forward, marker */
+#btn-stop.is-flashing svg rect,
+#btn-rewind.is-flashing svg rect,
+#btn-rewind.is-flashing svg path,
+#btn-forward.is-flashing svg rect,
+#btn-forward.is-flashing svg path,
+#btn-marker.is-flashing svg path {
+  animation: btnFlashIconFill 350ms ease-out;
+}
+
+/* stroke-based icon: undo */
+#btn-undo.is-flashing svg {
+  animation: btnFlashIconStroke 350ms ease-out;
+}
+#btn-undo.is-flashing .icon-undo-label {
+  color: #000;
+  transition: color 350ms ease-out;
+}
+
+#btn-undo .icon-undo-label {
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.03em;
+  margin-top: 2px;
+}
+#btn-undo {
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* ---------- tracks ---------- */
+
+.track-meter {
+  top: 34.78%;
+  width: 7.46%;
+  height: 48.19%;
+  border: var(--meter-border-width) solid var(--meter-border);
+  overflow: hidden;
+}
+
+.track-meter-fill {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 0%; /* dummy/static: empty, matches mockup */
+  background: linear-gradient(
+    to top,
+    var(--meter-green) 0%,
+    var(--meter-green) 70%,
+    var(--meter-yellow) 70%,
+    var(--meter-yellow) 90%,
+    var(--meter-red) 90%,
+    var(--meter-red) 100%
+  );
+  /* fixed to the meter's actual rendered height (48.19% of the 820px stage)
+     so the color zones stay anchored to real dB thresholds regardless of
+     the fill's own (dynamic) height, instead of rescaling with it */
+  background-size: 100% 395px;
+  background-position: bottom;
+}
+
+.track-name {
+  top: 85.42%;
+  width: 7.46%;
+  height: 2.56%;
+  padding: 0 4px;
+  color: var(--fg);
+  font-weight: 400;
+  font-size: 15px;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.track-label {
+  top: 89.18%;
+  width: 7.46%;
+  height: 2.56%;
+  color: var(--fg);
+  font-weight: 700;
+  font-size: 15px;
+  text-align: center;
+}
+
+/* ---------- track show/hide settings ---------- */
+
+#btn-settings {
+  left: 96.5%;
+  top: 1.5%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+}
+#btn-settings svg {
+  width: 100%;
+  height: 100%;
+}
+#btn-settings:active {
+  opacity: 1;
+}
+
+#track-settings-overlay {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 10;
+  align-items: center;
+  justify-content: center;
+}
+#track-settings-overlay.is-open {
+  display: flex;
+}
+
+#track-settings-panel {
+  width: 420px;
+  max-height: 80%;
+  background: #141414;
+  border: 2px solid #444;
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+
+#track-settings-title {
+  color: #999;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  text-align: center;
+  margin-bottom: 14px;
+}
+
+#track-settings-list {
+  overflow-y: auto;
+}
+
+.track-settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 10px;
+  border-bottom: 1px solid #2a2a2a;
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--fg);
+}
+
+.track-settings-row .switch {
+  width: 46px;
+  height: 26px;
+  border-radius: 13px;
+  border: 2px solid #666;
+  position: relative;
+  flex-shrink: 0;
+}
+.track-settings-row .switch .knob {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #666;
+  transition: left 120ms ease-out;
+}
+.track-settings-row.is-visible .switch {
+  border-color: var(--meter-green);
+}
+.track-settings-row.is-visible .switch .knob {
+  left: 19px;
+  background: var(--meter-green);
+}
+
+#track-settings-done {
+  margin-top: 16px;
+  text-align: center;
+  padding: 12px;
+  border: 2px solid #666;
+  border-radius: 10px;
+  color: var(--fg);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+#track-settings-done:active {
+  filter: brightness(1.4);
+}
+
+</style>
+</head>
+<body>
+
+<div class="viewport">
+  <div class="stage" id="stage">
+
+    <div class="el" id="btn-metronome">CLICK!!!</div>
+    <div class="el" id="timecode">00:00:00</div>
+
+    <!-- transport row -->
+    <div class="el btn btn-square" id="btn-loop">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--col-loop)" stroke-width="2">
+        <path d="M17 2l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M21 6H10a6 6 0 0 0-6 6" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M7 22l-4-4 4-4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M3 18h11a6 6 0 0 0 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+
+    <div class="el btn" id="btn-record">
+      <svg viewBox="0 0 24 24">
+        <circle class="icon-dot" cx="12" cy="12" r="7" fill="var(--col-record)"/>
+      </svg>
+    </div>
+
+    <div class="el btn btn-square" id="btn-play">
+      <svg viewBox="0 0 24 24">
+        <path d="M6 3l15 9-15 9V3z" fill="var(--col-play)"/>
+      </svg>
+    </div>
+
+    <div class="el btn btn-square" id="btn-stop">
+      <svg viewBox="0 0 24 24">
+        <rect x="5" y="5" width="14" height="14" fill="var(--col-stop)"/>
+      </svg>
+    </div>
+
+    <div class="el btn btn-square" id="btn-rewind">
+      <svg viewBox="0 0 24 24" fill="var(--col-rewind)">
+        <rect x="6" y="6" width="3" height="12"/>
+        <path d="M20 6l-10 6 10 6V6z"/>
+      </svg>
+    </div>
+
+    <div class="el btn btn-square" id="btn-marker">
+      <svg viewBox="0 0 24 24" fill="var(--col-marker)">
+        <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/>
+      </svg>
+    </div>
+
+    <div class="el btn btn-square" id="btn-forward">
+      <svg viewBox="0 0 24 24" fill="var(--col-forward)">
+        <path d="M4 6l10 6-10 6V6z"/>
+        <rect x="15" y="6" width="3" height="12"/>
+      </svg>
+    </div>
+
+    <div class="el btn btn-square" id="btn-undo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="var(--col-undo)" stroke-width="2">
+        <path d="M9 7L4 12l5 5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M4 12h11a5 5 0 0 1 0 10h-1" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div class="icon-undo-label" style="color: var(--col-undo);">UNDO</div>
+    </div>
+
+    <!-- tracks (generated 1-10) -->
+    <div id="tracks"></div>
+
+    <div class="el" id="btn-settings" title="Show/hide tracks">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </div>
+
+    <div id="track-settings-overlay">
+      <div id="track-settings-panel">
+        <div id="track-settings-title">SHOW / HIDE TRACKS</div>
+        <div id="track-settings-list"></div>
+        <div id="track-settings-done">DONE</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Which REAPER track numbers to actually display (up to MAX_VISIBLE),
+// chosen from whatever tracks really exist in the current session via the
+// settings panel (gear icon). Remembered on this device via localStorage.
+// null means "not configured yet" - defaults to the first MAX_VISIBLE
+// tracks found once real session data arrives.
+var VISIBLE_TRACKS_KEY = 'kitRemoteVisibleTracks';
+var MAX_VISIBLE = 10;
+
+function loadVisibleTracks() {
+  try {
+    var raw = localStorage.getItem(VISIBLE_TRACKS_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch (e) {}
+  return null;
+}
+
+function saveVisibleTracks(arr) {
+  try { localStorage.setItem(VISIBLE_TRACKS_KEY, JSON.stringify(arr)); } catch (e) {}
+}
+
+var VISIBLE_TRACKS = loadVisibleTracks();
+var knownTracks = {}; // REAPER track number -> last-seen track name, populated live
+
+// original 10-track grid, from the Illustrator spec export
+var GRID_LEFT = 8.39;    // % - left edge of track 1
+var GRID_RIGHT = 89.07;  // % - right edge of track 10
+var GRID_GUTTER = 8 / 1180 * 100; // ~0.68%, same gutter as the Illustrator grid
+
+var tracksEl = document.getElementById('tracks');
+var trackNameEls = {};
+var trackMeterFillEls = {};
+
+function rebuildTracks() {
+  var visible = (VISIBLE_TRACKS || []).slice().sort(function (a, b) { return a - b; });
+  if (!visible.length) {
+    tracksEl.innerHTML = '';
+    trackNameEls = {};
+    trackMeterFillEls = {};
+    return;
+  }
+
+  var totalSpan = GRID_RIGHT - GRID_LEFT;
+  var colWidth = (totalSpan - (visible.length - 1) * GRID_GUTTER) / visible.length;
+
+  var html = '';
+  for (var i = 0; i < visible.length; i++) {
+    var n = visible[i];
+    var left = GRID_LEFT + i * (colWidth + GRID_GUTTER);
+    var style = 'left:' + left + '%; width:' + colWidth + '%';
+    html +=
+      '<div class="el track-meter" style="' + style + '" data-track="' + n + '">' +
+        '<div class="track-meter-fill"></div>' +
+      '</div>' +
+      '<div class="el track-name" style="' + style + '" data-track="' + n + '">NAME</div>' +
+      '<div class="el track-label" style="' + style + '">TRACK ' + n + '</div>';
+  }
+  tracksEl.innerHTML = html;
+
+  trackNameEls = {};
+  trackMeterFillEls = {};
+  for (var j = 0; j < visible.length; j++) {
+    var t = visible[j];
+    trackNameEls[t] = document.querySelector('.track-name[data-track="' + t + '"]');
+    trackMeterFillEls[t] = document.querySelector('.track-meter[data-track="' + t + '"] .track-meter-fill');
+  }
+}
+rebuildTracks();
+
+// ---------- track show/hide settings panel ----------
+
+var settingsOverlay = document.getElementById('track-settings-overlay');
+var settingsList = document.getElementById('track-settings-list');
+
+var settingsTitle = document.getElementById('track-settings-title');
+
+function renderSettingsList() {
+  var nums = Object.keys(knownTracks).map(Number).sort(function (a, b) { return a - b; });
+  var selectedCount = (VISIBLE_TRACKS || []).length;
+  settingsTitle.textContent = 'SHOW / HIDE TRACKS (' + selectedCount + '/' + MAX_VISIBLE + ')';
+
+  if (!nums.length) {
+    settingsList.innerHTML = '<div style="color:#666; text-align:center; padding:20px; font-size:16px;">No tracks found yet - make sure a project with tracks is open in REAPER.</div>';
+    return;
+  }
+
+  var html = '';
+  for (var i = 0; i < nums.length; i++) {
+    var n = nums[i];
+    var visible = VISIBLE_TRACKS && VISIBLE_TRACKS.indexOf(n) !== -1;
+    html +=
+      '<div class="track-settings-row' + (visible ? ' is-visible' : '') + '" data-track="' + n + '">' +
+        '<span>' + n + '. ' + knownTracks[n] + '</span>' +
+        '<span class="switch"><span class="knob"></span></span>' +
+      '</div>';
+  }
+  settingsList.innerHTML = html;
+}
+
+settingsList.addEventListener('click', function (e) {
+  var row = e.target.closest('.track-settings-row');
+  if (!row) return;
+  var n = parseInt(row.getAttribute('data-track'), 10);
+  if (!VISIBLE_TRACKS) VISIBLE_TRACKS = [];
+  var idx = VISIBLE_TRACKS.indexOf(n);
+  if (idx === -1) {
+    if (VISIBLE_TRACKS.length >= MAX_VISIBLE) return; // at cap - deselect one first
+    VISIBLE_TRACKS.push(n);
+  } else {
+    VISIBLE_TRACKS.splice(idx, 1);
+  }
+  saveVisibleTracks(VISIBLE_TRACKS);
+  renderSettingsList();
+  rebuildTracks();
+});
+
+document.getElementById('btn-settings').addEventListener('click', function () {
+  renderSettingsList();
+  settingsOverlay.classList.add('is-open');
+});
+document.getElementById('track-settings-done').addEventListener('click', function () {
+  settingsOverlay.classList.remove('is-open');
+});
+
+// scale the fixed 1180x820 stage to fit the viewport without scrolling.
+// Uses visualViewport when available - it reflects the actual visible area
+// on mobile Safari (accounting for the address bar), unlike window.inner*
+// which can misreport during/after Safari's chrome shows or hides.
+function fitStage() {
+  var vv = window.visualViewport;
+  var vw = vv ? vv.width : window.innerWidth;
+  var vh = vv ? vv.height : window.innerHeight;
+  var scale = Math.min(vw / 1180, vh / 820);
+  var stage = document.getElementById('stage');
+  stage.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
+}
+window.addEventListener('resize', fitStage);
+window.addEventListener('orientationchange', fitStage);
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', fitStage);
+  window.visualViewport.addEventListener('scroll', fitStage);
+}
+fitStage();
+setTimeout(fitStage, 300); // re-check after Safari's chrome finishes animating in/out
+
+// ---------- REAPER live wiring ----------
+// Requires this page to be served by REAPER's own web server (e.g.
+// http://<your-computer's-LAN-IP>:8080/index.html) - wwr_req's "/_/..."
+// calls are relative and do nothing when opened as a local file:// page.
+
+var ACTIONS = {
+  play: 40044,    // Transport: Play/stop (toggle)
+  stop: 1016,     // Transport: Stop
+  record: 1013,   // Transport: Record
+  loop: 1068,     // Transport: Toggle repeat
+  rewind: 40172,  // Markers: Go to previous marker/project start
+  forward: 40173, // Markers: Go to next marker/project end
+  undo: 40029,    // Edit: Undo
+  marker: 40157,  // Markers: Insert marker at current position
+  metronome: 40364 // Transport: Toggle metronome
+};
+
+var timecodeEl = document.getElementById('timecode');
+var btnPlay = document.getElementById('btn-play');
+var btnStop = document.getElementById('btn-stop');
+var btnRecord = document.getElementById('btn-record');
+var btnLoop = document.getElementById('btn-loop');
+var btnRewind = document.getElementById('btn-rewind');
+var btnMarker = document.getElementById('btn-marker');
+var btnForward = document.getElementById('btn-forward');
+var btnUndo = document.getElementById('btn-undo');
+var btnMetronome = document.getElementById('btn-metronome');
+
+function flashButton(el) {
+  el.classList.remove('is-flashing');
+  void el.offsetWidth; // restart animation
+  el.classList.add('is-flashing');
+}
+
+function bindAction(el, actionId, flashOnClick) {
+  el.addEventListener('click', function () {
+    if (actionId) wwr_req(actionId);
+    if (flashOnClick) flashButton(el);
+  });
+}
+bindAction(btnPlay, ACTIONS.play);
+bindAction(btnStop, ACTIONS.stop); // flash handled by confirmed TRANSPORT state instead
+bindAction(btnRecord, ACTIONS.record);
+bindAction(btnLoop, ACTIONS.loop);
+bindAction(btnRewind, ACTIONS.rewind, true);
+bindAction(btnForward, ACTIONS.forward, true);
+bindAction(btnUndo, ACTIONS.undo, true);
+bindAction(btnMarker, ACTIONS.marker, true);
+bindAction(btnMetronome, ACTIONS.metronome); // confirmed state handled via GET/40364 below
+
+var lastPlaystate = -1;
+
+// maps a meter reading in dB (REAPER sends dB*10) to a 0-100% fill height
+var METER_MIN_DB = -60;
+var METER_MAX_DB = 0;
+function meterDbToPercent(db) {
+  var pct = (db - METER_MIN_DB) / (METER_MAX_DB - METER_MIN_DB) * 100;
+  if (pct < 0) pct = 0;
+  if (pct > 100) pct = 100;
+  return pct;
+}
+
+// formats raw seconds as HH:MM:SS, independent of REAPER's project ruler
+// setting (tok[4] reflects whatever ruler format the project uses, which
+// could be measures.beats instead of clock time)
+function formatClock(totalSeconds) {
+  totalSeconds = Math.max(0, Math.floor(totalSeconds));
+  var h = Math.floor(totalSeconds / 3600);
+  var m = Math.floor((totalSeconds % 3600) / 60);
+  var s = totalSeconds % 60;
+  function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+  return pad2(h) + ':' + pad2(m) + ':' + pad2(s);
+}
+
+function wwr_onreply(results) {
+  var lines = results.split('\n');
+  for (var i = 0; i < lines.length; i++) {
+    var tok = lines[i].split('\t');
+    if (tok[0] === 'TRANSPORT' && tok.length > 3) {
+      var playstate = parseInt(tok[1], 10);
+      var isRepeatOn = parseInt(tok[3], 10) > 0;
+
+      var isPlaying = (playstate & 1) !== 0;   // true for playing(1) and recording(5)
+      var isRecording = (playstate & 4) !== 0; // true for recording(5) and rec-paused(6)
+
+      timecodeEl.textContent = formatClock(parseFloat(tok[2]));
+
+      btnPlay.classList.toggle('is-active', isPlaying);
+      btnRecord.classList.toggle('is-recording', isRecording);
+      btnLoop.classList.toggle('is-active', isRepeatOn);
+
+      if (playstate === 0 && lastPlaystate !== 0 && lastPlaystate !== -1) {
+        flashButton(btnStop);
+      }
+      lastPlaystate = playstate;
+    } else if (tok[0] === 'TRACK' && tok.length > 7) {
+      var trackNum = parseInt(tok[1], 10);
+      if (trackNum < 1) continue; // skip master (0)
+
+      var trackName = tok[2];
+      if (trackName) knownTracks[trackNum] = trackName;
+
+      if (VISIBLE_TRACKS && VISIBLE_TRACKS.indexOf(trackNum) !== -1) {
+        var meterPos = parseInt(tok[7], 10) / 10; // dB
+
+        var nameEl = trackNameEls[trackNum];
+        if (nameEl && trackName) nameEl.textContent = trackName;
+
+        var fillEl = trackMeterFillEls[trackNum];
+        if (fillEl) fillEl.style.height = meterDbToPercent(meterPos) + '%';
+      }
+    } else if (tok[0] === 'CMDSTATE' && tok.length > 2) {
+      if (parseInt(tok[1], 10) === ACTIONS.metronome) {
+        btnMetronome.classList.toggle('is-active', parseInt(tok[2], 10) > 0);
+      }
+    }
+  }
+
+  // first time we've ever seen real session tracks with no saved
+  // preference - default to the first MAX_VISIBLE tracks found
+  if (VISIBLE_TRACKS === null) {
+    var seen = Object.keys(knownTracks).map(Number);
+    if (seen.length) {
+      seen.sort(function (a, b) { return a - b; });
+      VISIBLE_TRACKS = seen.slice(0, MAX_VISIBLE);
+      saveVisibleTracks(VISIBLE_TRACKS);
+      rebuildTracks();
+    }
+  }
+}
+
+wwr_req_recur('TRANSPORT;TRACK;GET/' + ACTIONS.metronome, 100);
+wwr_start();
+</script>
+
+</body>
+</html>
