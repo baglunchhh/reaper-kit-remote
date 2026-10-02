@@ -7,6 +7,19 @@
 <meta name="mobile-web-app-capable" content="yes" />
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 <title>Kit Remote</title>
+<script>
+// pick the skin before first paint: ?skin=... wins (and is remembered), else last saved, else classic
+(function () {
+  var skin = 'classic';
+  var m = /[?&]skin=([a-z]+)/.exec(location.search);
+  try {
+    if (m) { skin = m[1]; localStorage.setItem('kitRemoteSkin', skin); }
+    else { skin = localStorage.getItem('kitRemoteSkin') || 'classic'; }
+  } catch (e) { if (m) skin = m[1]; }
+  if (['classic', 'retro', 'hifi'].indexOf(skin) === -1) skin = 'classic';
+  document.documentElement.setAttribute('data-skin', skin);
+})();
+</script>
 <script src="main.js"></script>
 <style>
 
@@ -16,31 +29,6 @@
   font-weight: 100 900;
   font-style: normal;
   font-display: swap;
-}
-
-:root {
-  --bg: #000000;
-  --fg: #ffffff;
-  --meter-border: #808080;
-  --meter-border-width: 2px;
-
-  --col-loop: #353637;
-  --col-record: #ee3b40;
-  --col-play: #39b54a;
-  --col-stop: #cbdb2a;
-  --col-rewind: #60cdf6;
-  --col-marker: #00aeef;
-  --col-forward: #60cdf6;
-  --col-undo: #f172ac;
-  --col-metronome: #f5a623;
-
-  --btn-stroke-width: 5px;
-  --btn-radius-square: 23px;
-  --btn-radius-pill: 20px;
-
-  --meter-green: #39b54a;
-  --meter-yellow: #cbdb2a;
-  --meter-red: #ee3b40;
 }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -70,14 +58,49 @@ html, body {
   width: 1180px;
   height: 820px;
   transform-origin: center center;
-  background: var(--bg);
+  background-color: var(--bg);
 }
 
 .el { position: absolute; }
 
-/* ---------- header ---------- */
+/* The Illustrator layout is asymmetric (8.39% left margin vs 10.84% right),
+   so everything is nudged right by half the difference to sit centered. */
+#content {
+  position: absolute;
+  left: 1.225%;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
 
-#btn-metronome {
+#faceplate, #grille, .screw, #brand-l, #brand-c, #brand-r { display: none; }
+
+/* ===== classic ===== */
+html[data-skin="classic"] {
+  --bg: #000000;
+  --fg: #ffffff;
+  --meter-border: #808080;
+  --meter-border-width: 2px;
+
+  --col-loop: #353637;
+  --col-record: #ee3b40;
+  --col-play: #39b54a;
+  --col-stop: #cbdb2a;
+  --col-rewind: #60cdf6;
+  --col-marker: #00aeef;
+  --col-forward: #60cdf6;
+  --col-undo: #f172ac;
+  --col-metronome: #f5a623;
+
+  --btn-stroke-width: 5px;
+  --btn-radius-square: 23px;
+  --btn-radius-pill: 20px;
+
+  --meter-green: #39b54a;
+  --meter-yellow: #cbdb2a;
+  --meter-red: #ee3b40;
+}
+html[data-skin="classic"] #btn-metronome {
   left: 8.39%;
   top: 10%;
   width: 30%;
@@ -98,15 +121,14 @@ html, body {
   white-space: nowrap;
   --flash-color: var(--col-metronome);
 }
-#btn-metronome:active {
+html[data-skin="classic"] #btn-metronome:active {
   filter: brightness(1.4);
 }
-#btn-metronome.is-active {
+html[data-skin="classic"] #btn-metronome.is-active {
   background: var(--col-metronome);
   color: #000;
 }
-
-#timecode {
+html[data-skin="classic"] #timecode {
   left: 65.34%;
   top: 8.58%;
   width: 23.82%;
@@ -120,10 +142,7 @@ html, body {
   justify-content: flex-end;
   white-space: nowrap;
 }
-
-/* ---------- transport buttons ---------- */
-
-.btn {
+html[data-skin="classic"] .btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -134,58 +153,49 @@ html, body {
   top: 19.73%;
   height: 10.73%;
 }
-
-.btn:active {
+html[data-skin="classic"] .btn:active {
   filter: brightness(1.4);
 }
-
-.btn-square {
+html[data-skin="classic"] .btn-square {
   width: 7.46%;
   border-radius: var(--btn-radius-square);
 }
-
-.btn svg {
+html[data-skin="classic"] .btn svg {
   width: 55%;
   height: 55%;
 }
-
-#btn-loop    { left: 8.39%;  border-color: var(--col-loop);    --flash-color: var(--col-loop); }
-#btn-play    { left: 32.8%;  border-color: var(--col-play);    --flash-color: var(--col-play); }
-#btn-stop    { left: 40.93%; border-color: var(--col-stop);    --flash-color: var(--col-stop); }
-#btn-rewind  { left: 57.2%;  border-color: var(--col-rewind);  --flash-color: var(--col-rewind); }
-#btn-marker  { left: 65.35%; border-color: var(--col-marker);  --flash-color: var(--col-marker); }
-#btn-forward { left: 73.49%; border-color: var(--col-forward); --flash-color: var(--col-forward); }
-#btn-undo    { left: 81.61%; border-color: var(--col-undo);    --flash-color: var(--col-undo); }
-
-#btn-record {
+html[data-skin="classic"] #btn-loop { left: 8.39%;  border-color: var(--col-loop);    --flash-color: var(--col-loop); }
+html[data-skin="classic"] #btn-play { left: 32.8%;  border-color: var(--col-play);    --flash-color: var(--col-play); }
+html[data-skin="classic"] #btn-stop { left: 40.93%; border-color: var(--col-stop);    --flash-color: var(--col-stop); }
+html[data-skin="classic"] #btn-rewind { left: 57.2%;  border-color: var(--col-rewind);  --flash-color: var(--col-rewind); }
+html[data-skin="classic"] #btn-marker { left: 65.35%; border-color: var(--col-marker);  --flash-color: var(--col-marker); }
+html[data-skin="classic"] #btn-forward { left: 73.49%; border-color: var(--col-forward); --flash-color: var(--col-forward); }
+html[data-skin="classic"] #btn-undo { left: 81.61%; border-color: var(--col-undo);    --flash-color: var(--col-undo); }
+html[data-skin="classic"] #btn-record {
   left: 16.53%;
   width: 15.59%;
   border-radius: var(--btn-radius-pill);
   border-color: var(--col-record);
 }
-
-#btn-record.is-recording {
+html[data-skin="classic"] #btn-record.is-recording {
   background: var(--col-record);
 }
-#btn-record.is-recording .icon-dot {
+html[data-skin="classic"] #btn-record.is-recording .icon-dot {
   fill: #000;
 }
-
-#btn-play.is-active {
+html[data-skin="classic"] #btn-play.is-active {
   background: var(--col-play);
 }
-#btn-play.is-active svg path {
+html[data-skin="classic"] #btn-play.is-active svg path {
   fill: #000;
 }
-
-#btn-loop.is-active {
+html[data-skin="classic"] #btn-loop.is-active {
   background: var(--col-record);
   border-color: var(--col-record);
 }
-#btn-loop.is-active svg {
+html[data-skin="classic"] #btn-loop.is-active svg {
   stroke: #000;
 }
-
 @keyframes btnFlashBg {
   0% { background: var(--flash-color); }
   100% { background: transparent; }
@@ -198,57 +208,47 @@ html, body {
   0% { stroke: #000; }
   100% { stroke: var(--flash-color); }
 }
-
-.btn.is-flashing {
+html[data-skin="classic"] .btn.is-flashing {
   animation: btnFlashBg 350ms ease-out;
 }
-
-/* fill-based icons: stop, rewind, forward, marker */
-#btn-stop.is-flashing svg rect,
-#btn-rewind.is-flashing svg rect,
-#btn-rewind.is-flashing svg path,
-#btn-forward.is-flashing svg rect,
-#btn-forward.is-flashing svg path,
-#btn-marker.is-flashing svg path {
+html[data-skin="classic"] #btn-stop.is-flashing svg rect,
+html[data-skin="classic"] #btn-rewind.is-flashing svg rect,
+html[data-skin="classic"] #btn-rewind.is-flashing svg path,
+html[data-skin="classic"] #btn-forward.is-flashing svg rect,
+html[data-skin="classic"] #btn-forward.is-flashing svg path,
+html[data-skin="classic"] #btn-marker.is-flashing svg path {
   animation: btnFlashIconFill 350ms ease-out;
 }
-
-/* stroke-based icon: undo */
-#btn-undo.is-flashing svg {
+html[data-skin="classic"] #btn-undo.is-flashing svg {
   animation: btnFlashIconStroke 350ms ease-out;
 }
-#btn-undo.is-flashing .icon-undo-label {
+html[data-skin="classic"] #btn-undo.is-flashing .icon-undo-label {
   color: #000;
   transition: color 350ms ease-out;
 }
-
-#btn-undo .icon-undo-label {
+html[data-skin="classic"] #btn-undo .icon-undo-label {
   font-weight: 700;
   font-size: 15px;
   letter-spacing: 0.03em;
   margin-top: 2px;
 }
-#btn-undo {
+html[data-skin="classic"] #btn-undo {
   flex-direction: column;
   gap: 2px;
 }
-
-/* ---------- tracks ---------- */
-
-.track-meter {
+html[data-skin="classic"] .track-meter {
   top: 34.78%;
   width: 7.46%;
   height: 48.19%;
   border: var(--meter-border-width) solid var(--meter-border);
   overflow: hidden;
 }
-
-.track-meter-fill {
+html[data-skin="classic"] .track-meter-fill {
   position: absolute;
   left: 0;
   bottom: 0;
   width: 100%;
-  height: 0%; /* dummy/static: empty, matches mockup */
+  height: 0%; 
   background: linear-gradient(
     to top,
     var(--meter-green) 0%,
@@ -258,14 +258,11 @@ html, body {
     var(--meter-red) 90%,
     var(--meter-red) 100%
   );
-  /* fixed to the meter's actual rendered height (48.19% of the 820px stage)
-     so the color zones stay anchored to real dB thresholds regardless of
-     the fill's own (dynamic) height, instead of rescaling with it */
+  
   background-size: 100% 395px;
   background-position: bottom;
 }
-
-.track-name {
+html[data-skin="classic"] .track-name {
   top: 85.42%;
   width: 7.46%;
   height: 2.56%;
@@ -279,8 +276,7 @@ html, body {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
-.track-label {
+html[data-skin="classic"] .track-label {
   top: 89.18%;
   width: 7.46%;
   height: 2.56%;
@@ -289,10 +285,7 @@ html, body {
   font-size: 15px;
   text-align: center;
 }
-
-/* ---------- track show/hide settings ---------- */
-
-#btn-settings {
+html[data-skin="classic"] #btn-settings {
   left: 96.5%;
   top: 1.5%;
   width: 28px;
@@ -302,15 +295,14 @@ html, body {
   justify-content: center;
   opacity: 0.5;
 }
-#btn-settings svg {
+html[data-skin="classic"] #btn-settings svg {
   width: 100%;
   height: 100%;
 }
-#btn-settings:active {
+html[data-skin="classic"] #btn-settings:active {
   opacity: 1;
 }
-
-#track-settings-overlay {
+html[data-skin="classic"] #track-settings-overlay {
   display: none;
   position: absolute;
   left: 0;
@@ -322,11 +314,10 @@ html, body {
   align-items: center;
   justify-content: center;
 }
-#track-settings-overlay.is-open {
+html[data-skin="classic"] #track-settings-overlay.is-open {
   display: flex;
 }
-
-#track-settings-panel {
+html[data-skin="classic"] #track-settings-panel {
   width: 420px;
   max-height: 80%;
   background: #141414;
@@ -336,8 +327,7 @@ html, body {
   display: flex;
   flex-direction: column;
 }
-
-#track-settings-title {
+html[data-skin="classic"] #track-settings-title {
   color: #999;
   font-weight: 700;
   font-size: 18px;
@@ -345,12 +335,10 @@ html, body {
   text-align: center;
   margin-bottom: 14px;
 }
-
-#track-settings-list {
+html[data-skin="classic"] #track-settings-list {
   overflow-y: auto;
 }
-
-.track-settings-row {
+html[data-skin="classic"] .track-settings-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -360,8 +348,7 @@ html, body {
   font-weight: 500;
   color: var(--fg);
 }
-
-.track-settings-row .switch {
+html[data-skin="classic"] .track-settings-row .switch {
   width: 46px;
   height: 26px;
   border-radius: 13px;
@@ -369,7 +356,7 @@ html, body {
   position: relative;
   flex-shrink: 0;
 }
-.track-settings-row .switch .knob {
+html[data-skin="classic"] .track-settings-row .switch .knob {
   position: absolute;
   top: 1px;
   left: 1px;
@@ -379,15 +366,14 @@ html, body {
   background: #666;
   transition: left 120ms ease-out;
 }
-.track-settings-row.is-visible .switch {
+html[data-skin="classic"] .track-settings-row.is-visible .switch {
   border-color: var(--meter-green);
 }
-.track-settings-row.is-visible .switch .knob {
+html[data-skin="classic"] .track-settings-row.is-visible .switch .knob {
   left: 19px;
   background: var(--meter-green);
 }
-
-#track-settings-done {
+html[data-skin="classic"] #track-settings-done {
   margin-top: 16px;
   text-align: center;
   padding: 12px;
@@ -397,10 +383,870 @@ html, body {
   font-weight: 700;
   letter-spacing: 0.08em;
 }
-#track-settings-done:active {
+html[data-skin="classic"] #track-settings-done:active {
   filter: brightness(1.4);
 }
+html[data-skin="classic"] #btn-loop { color: var(--col-loop); }
+html[data-skin="classic"] #btn-record { color: var(--col-record); }
+html[data-skin="classic"] #btn-play { color: var(--col-play); }
+html[data-skin="classic"] #btn-stop { color: var(--col-stop); }
+html[data-skin="classic"] #btn-rewind { color: var(--col-rewind); }
+html[data-skin="classic"] #btn-marker { color: var(--col-marker); }
+html[data-skin="classic"] #btn-forward { color: var(--col-forward); }
+html[data-skin="classic"] #btn-undo { color: var(--col-undo); }
+html[data-skin="classic"] .btn svg { stroke-width: 2; }
+html[data-skin="classic"] #skin-title,
+html[data-skin="classic"] #track-settings-title2 {
+  color: #999;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.08em;
+  text-align: center;
+  margin-bottom: 14px;
+}
+html[data-skin="classic"] #skin-picker { display: flex; gap: 8px; margin-bottom: 20px; }
+html[data-skin="classic"] .skin-opt {
+  flex: 1;
+  text-align: center;
+  padding: 12px 6px;
+  border: 2px solid #666;
+  border-radius: 10px;
+  color: #999;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.08em;
+}
+html[data-skin="classic"] .skin-opt.is-selected { border-color: #fff; color: #fff; background: #262626; }
+/* ===== retro (radio) ===== */
+html[data-skin="retro"] {
+  --bg: #1a0f0a;
+  --ink: #2b170f;
+  --maroon: #5a2323;
+  --maroon-dk: #3a1515;
+  --brass: #c9a227;
+  --brass-lt: #e8cf72;
+  --brass-dk: #7d5f12;
+  --cream: #f3e6bd;
+  --cream-lt: #fbf5d8;
+  --red: #c0302a;
+  --green: #3f7d36;
+  --amber: #f2b73a;
+  --flash: #e9c24d;
 
+  --meter-green: #5f9137;
+  --meter-yellow: #dcae2c;
+  --meter-red: #c0302a;
+  --meter-border-width: 3px;
+}
+html[data-skin="retro"] #faceplate {
+  position: absolute;
+  left: 6%;
+  top: 2.6%;
+  width: 85.6%;
+  height: 91.8%;
+  background: linear-gradient(#612828, #471b1b);
+  border: 4px solid var(--brass);
+  border-radius: 18px;
+  box-shadow:
+    inset 0 0 0 2px var(--brass-dk),
+    inset 0 0 46px rgba(0,0,0,0.5),
+    0 10px 26px rgba(0,0,0,0.6);
+}
+html[data-skin="retro"] #faceplate::after {
+  content: '';
+  position: absolute;
+  inset: 9px;
+  border: 1px solid rgba(243, 230, 189, 0.28);
+  border-radius: 12px;
+  pointer-events: none;
+}
+html[data-skin="retro"] #grille {
+  left: 10%;
+  top: 4.9%;
+  width: 79.6%;
+  height: 2.4%;
+  border: 2px solid var(--brass-dk);
+  border-radius: 6px;
+  background:
+    radial-gradient(circle at 50% 50%, var(--brass) 1.3px, transparent 1.9px) 0 0 / 9px 9px,
+    #2a0f0f;
+  box-shadow: inset 0 2px 6px rgba(0,0,0,0.7);
+}
+html[data-skin="retro"] .screw {
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background:
+    linear-gradient(45deg, transparent 44%, rgba(60,40,5,0.95) 44% 56%, transparent 56%),
+    radial-gradient(circle at 35% 30%, #f6e394, #b58d22 55%, #6a4d0c);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.7);
+}
+html[data-skin="retro"] #btn-metronome {
+  left: 8.39%;
+  top: 10%;
+  width: 30%;
+  height: 4.88%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(#4a1c1c, #331010);
+  border: 3px solid var(--brass);
+  border-radius: 20px;
+  box-shadow: inset 0 0 0 1px var(--brass-dk), inset 0 3px 8px rgba(0,0,0,0.5), 0 4px 8px rgba(0,0,0,0.45);
+  color: var(--cream);
+  font-weight: 700;
+  font-size: 23px;
+  letter-spacing: 0.1em;
+  white-space: nowrap;
+  transition: transform 60ms;
+}
+html[data-skin="retro"] #btn-metronome:active { transform: translateY(2px); }
+html[data-skin="retro"] #btn-metronome.is-active {
+  background: linear-gradient(#ffd877, var(--amber));
+  color: var(--maroon-dk);
+  box-shadow: inset 0 0 0 1px #fff2c4, 0 0 22px rgba(255, 190, 70, 0.75), 0 4px 8px rgba(0,0,0,0.45);
+}
+html[data-skin="retro"] #timecode {
+  left: 65.34%;
+  top: 8.4%;
+  width: 23.82%;
+  height: 7.9%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 22px;
+  background: linear-gradient(#f9f0d0, #e9d9a4);
+  border: 3px solid var(--brass);
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 2px var(--cream-lt), inset 0 4px 12px rgba(90, 55, 20, 0.4), 0 4px 10px rgba(0,0,0,0.45);
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 46px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+html[data-skin="retro"] .btn {
+  top: 19.73%;
+  height: 10.73%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--cream);
+  background-image: linear-gradient(rgba(255,255,255,0.65), rgba(255,255,255,0) 55%, rgba(120, 85, 25, 0.16));
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  color: var(--glyph, var(--maroon));
+  box-shadow:
+    inset 0 2px 0 rgba(255,255,255,0.75),
+    0 7px 0 var(--ink),
+    0 10px 10px rgba(0,0,0,0.45);
+  transition: transform 60ms, box-shadow 60ms;
+}
+html[data-skin="retro"] .btn svg { width: 52%; height: 52%; }
+html[data-skin="retro"] .btn:active,
+html[data-skin="retro"] .btn.is-active,
+html[data-skin="retro"] .btn.is-recording {
+  transform: translateY(6px);
+  box-shadow: inset 0 3px 8px rgba(0,0,0,0.4), 0 1px 0 var(--ink);
+}
+html[data-skin="retro"] .btn.is-active,
+html[data-skin="retro"] .btn.is-recording {
+  background-color: var(--face, var(--red));
+  color: var(--cream-lt);
+}
+html[data-skin="retro"] .btn-square { width: 7.46%; }
+html[data-skin="retro"] #btn-loop { left: 8.39%;  --glyph: #5a2a1a;  --face: var(--red); }
+html[data-skin="retro"] #btn-record { left: 16.53%; width: 15.59%; --glyph: var(--red); --face: var(--red); }
+html[data-skin="retro"] #btn-play { left: 32.8%;  --glyph: var(--green); --face: var(--green); }
+html[data-skin="retro"] #btn-stop { left: 40.93%; --glyph: #5a1f1f; }
+html[data-skin="retro"] #btn-rewind { left: 57.2%;  --glyph: #5a2a1a; }
+html[data-skin="retro"] #btn-marker { left: 65.35%; --glyph: #b0481c; }
+html[data-skin="retro"] #btn-forward { left: 73.49%; --glyph: #5a2a1a; }
+html[data-skin="retro"] #btn-undo { left: 81.61%; --glyph: #8a6414; flex-direction: column; gap: 2px; }
+html[data-skin="retro"] #btn-undo .icon-undo-label {
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.04em;
+}
+@keyframes keyFlash {
+  0% {
+    background-color: var(--flash);
+    color: var(--maroon-dk);
+    transform: translateY(6px);
+    box-shadow: inset 0 3px 8px rgba(0,0,0,0.4), 0 1px 0 var(--ink);
+  }
+  100% {
+    background-color: var(--cream);
+    color: var(--glyph, var(--maroon));
+    transform: translateY(0);
+    box-shadow: inset 0 2px 0 rgba(255,255,255,0.75), 0 7px 0 var(--ink), 0 10px 10px rgba(0,0,0,0.45);
+  }
+}
+html[data-skin="retro"] .btn.is-flashing { animation: keyFlash 380ms ease-out; }
+html[data-skin="retro"] .track-meter {
+  top: 34.78%;
+  height: 48.19%;
+  background: linear-gradient(#f7edca, #e6d59e);
+  border: var(--meter-border-width) solid var(--brass);
+  border-radius: 12px;
+  box-shadow:
+    inset 0 0 0 2px var(--cream-lt),
+    inset 0 5px 14px rgba(90, 55, 20, 0.4),
+    0 4px 10px rgba(0,0,0,0.45);
+  overflow: hidden;
+}
+html[data-skin="retro"] .track-meter::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    repeating-linear-gradient(to top, var(--ink) 0, var(--ink) 2px, transparent 2px, transparent 16.6667%),
+    repeating-linear-gradient(to top, var(--ink) 0, var(--ink) 2px, transparent 2px, transparent 16.6667%),
+    repeating-linear-gradient(to top, var(--ink) 0, var(--ink) 1px, transparent 1px, transparent 8.3333%),
+    repeating-linear-gradient(to top, var(--ink) 0, var(--ink) 1px, transparent 1px, transparent 8.3333%);
+  background-size: 15px 100%, 15px 100%, 8px 100%, 8px 100%;
+  background-position: left top, right top, left top, right top;
+  background-repeat: no-repeat;
+  opacity: 0.8;
+}
+html[data-skin="retro"] .track-meter::after {
+  content: '';
+  position: absolute;
+  left: 24%;
+  width: 52%;
+  top: 0;
+  bottom: 0;
+  z-index: 0;
+  background: rgba(70, 40, 15, 0.22);
+  box-shadow: inset 0 0 6px rgba(60, 35, 10, 0.45);
+}
+html[data-skin="retro"] .track-meter-fill {
+  position: absolute;
+  left: 24%;
+  bottom: 0;
+  width: 52%;
+  height: 0%;
+  z-index: 1;
+  background: linear-gradient(
+    to top,
+    var(--meter-green) 0%,
+    var(--meter-green) 70%,
+    var(--meter-yellow) 70%,
+    var(--meter-yellow) 90%,
+    var(--meter-red) 90%,
+    var(--meter-red) 100%
+  );
+  
+  background-size: 100% 395px;
+  background-position: bottom;
+  box-shadow: inset 0 0 0 1px rgba(40, 20, 5, 0.35);
+}
+html[data-skin="retro"] .track-meter-fill::after {
+  content: '';
+  position: absolute;
+  left: -46%;
+  width: 192%;
+  top: -2px;
+  height: 4px;
+  background: #d8372f;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px #fff7e0;
+}
+html[data-skin="retro"] .track-name {
+  top: 85%;
+  height: 3.4%;
+  padding: 0 6px;
+  line-height: 25px;
+  text-align: center;
+  background: var(--maroon-dk);
+  border: 2px solid var(--brass);
+  border-bottom: none;
+  border-radius: 9px 9px 0 0;
+  color: var(--cream);
+  font-weight: 500;
+  font-size: 15px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+html[data-skin="retro"] .track-label {
+  top: 88.4%;
+  height: 3.5%;
+  line-height: 24px;
+  text-align: center;
+  background: var(--maroon-dk);
+  border: 2px solid var(--brass);
+  border-top: 1px solid rgba(201, 162, 39, 0.45);
+  border-radius: 0 0 9px 9px;
+  color: var(--brass-lt);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+}
+html[data-skin="retro"] #btn-settings {
+  left: 96.5%;
+  top: 1.5%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+}
+html[data-skin="retro"] #btn-settings svg { width: 100%; height: 100%; stroke: var(--brass-lt); }
+html[data-skin="retro"] #btn-settings:active { opacity: 1; }
+html[data-skin="retro"] #track-settings-overlay {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(15, 6, 4, 0.85);
+  z-index: 10;
+  align-items: center;
+  justify-content: center;
+}
+html[data-skin="retro"] #track-settings-overlay.is-open { display: flex; }
+html[data-skin="retro"] #track-settings-panel {
+  width: 420px;
+  max-height: 80%;
+  background: linear-gradient(#612828, #471b1b);
+  border: 4px solid var(--brass);
+  border-radius: 16px;
+  box-shadow: inset 0 0 0 2px var(--brass-dk), 0 10px 30px rgba(0,0,0,0.6);
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+}
+html[data-skin="retro"] #track-settings-title {
+  color: var(--brass-lt);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.1em;
+  text-align: center;
+  margin-bottom: 14px;
+}
+html[data-skin="retro"] #track-settings-list { overflow-y: auto; }
+html[data-skin="retro"] .track-settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 10px;
+  border-bottom: 1px solid rgba(201, 162, 39, 0.25);
+  font-size: 20px;
+  font-weight: 500;
+  color: var(--cream);
+}
+html[data-skin="retro"] .track-settings-row .switch {
+  width: 46px;
+  height: 26px;
+  border-radius: 13px;
+  border: 2px solid #9a8a68;
+  position: relative;
+  flex-shrink: 0;
+}
+html[data-skin="retro"] .track-settings-row .switch .knob {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #9a8a68;
+  transition: left 120ms ease-out;
+}
+html[data-skin="retro"] .track-settings-row.is-visible .switch { border-color: var(--amber); }
+html[data-skin="retro"] .track-settings-row.is-visible .switch .knob { left: 19px; background: var(--amber); }
+html[data-skin="retro"] #track-settings-done {
+  margin-top: 16px;
+  text-align: center;
+  padding: 12px;
+  border: 2px solid var(--brass);
+  border-radius: 10px;
+  background: var(--maroon-dk);
+  color: var(--cream);
+  font-weight: 700;
+  letter-spacing: 0.1em;
+}
+html[data-skin="retro"] #track-settings-done:active { filter: brightness(1.3); }
+html[data-skin="retro"] .stage {
+  background-image: linear-gradient(rgba(0,0,0,0.2), rgba(0,0,0,0.2)), url('Background-Wood.jpg');
+  background-size: 100% 100%;
+}
+html[data-skin="retro"] #faceplate,
+html[data-skin="retro"] #grille,
+html[data-skin="retro"] .screw { display: block; }
+html[data-skin="retro"] #skin-title {
+  color: var(--brass-lt);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.1em;
+  text-align: center;
+  margin-bottom: 14px;
+}
+html[data-skin="retro"] #skin-picker { display: flex; gap: 8px; margin-bottom: 20px; }
+html[data-skin="retro"] .skin-opt {
+  flex: 1;
+  text-align: center;
+  padding: 12px 6px;
+  border: 2px solid rgba(201, 162, 39, 0.5);
+  border-radius: 10px;
+  color: var(--cream);
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.08em;
+  background: var(--maroon-dk);
+}
+html[data-skin="retro"] .skin-opt.is-selected { border-color: var(--amber); color: var(--maroon-dk); background: var(--amber); }
+/* ===== hifi (silver faceplate) ===== */
+html[data-skin="hifi"] {
+  --bg: #0b0807;
+  --ink: #15181a;
+  --cyan: #56e4ff;
+  --teal: #3df5b8;
+  --orange: #ff9a3a;
+  --red: #ff4136;
+  --chrome-ring: 0 0 0 3px #7d8085, 0 0 0 5px #eceef0, 0 0 0 6px #4a4d50;
+}
+html[data-skin="hifi"] .stage {
+  background-color: var(--bg);
+  background-image:
+    repeating-linear-gradient(90deg, #6e4328 0 5px, #5a3521 5px 8px, #74482c 8px 12px),
+    repeating-linear-gradient(90deg, #6e4328 0 5px, #5a3521 5px 8px, #74482c 8px 12px),
+    linear-gradient(90deg, rgba(0,0,0,0.55), rgba(0,0,0,0) 18%, rgba(0,0,0,0) 82%, rgba(0,0,0,0.55)),
+    radial-gradient(ellipse at 50% 42%, #2d2521, #0b0807 78%);
+  background-size: 7% 100%, 7% 100%, 100% 100%, 100% 100%;
+  background-position: left top, right top, 0 0, 0 0;
+  background-repeat: no-repeat;
+}
+html[data-skin="hifi"] #faceplate {
+  position: absolute;
+  left: 6%;
+  top: 2.6%;
+  width: 85.6%;
+  height: 91.8%;
+  border-radius: 8px;
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.2) 0 1px, rgba(0,0,0,0.05) 1px 2px),
+    linear-gradient(90deg, rgba(0,0,0,0.16), rgba(255,255,255,0.2) 22%, rgba(255,255,255,0.08) 60%, rgba(0,0,0,0.18)),
+    linear-gradient(#dcdee0, #b6b9bd 48%, #cfd1d4);
+  border: 1px solid #6a6d70;
+  box-shadow: inset 0 1px 0 #fff, inset 0 -3px 0 rgba(0,0,0,0.28), 0 14px 34px rgba(0,0,0,0.75);
+}
+html[data-skin="hifi"] .screw {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background:
+    linear-gradient(90deg, transparent 43%, rgba(40,40,40,0.9) 43% 57%, transparent 57%),
+    linear-gradient(0deg, transparent 43%, rgba(40,40,40,0.9) 43% 57%, transparent 57%),
+    radial-gradient(circle at 35% 30%, #ffffff, #bfc2c6 55%, #6f7276);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.6);
+}
+html[data-skin="hifi"] #brand-l,
+html[data-skin="hifi"] #brand-c,
+html[data-skin="hifi"] #brand-r {
+  display: block;
+  top: 3.7%;
+  white-space: nowrap;
+  color: #1b1d1f;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.8);
+}
+html[data-skin="hifi"] #brand-l,
+html[data-skin="hifi"] #brand-r {
+  font-family: "Snell Roundhand", "Apple Chancery", "Brush Script MT", "Segoe Script", cursive;
+  font-style: italic;
+  font-size: 25px;
+}
+html[data-skin="hifi"] #brand-l { left: 9.5%; }
+html[data-skin="hifi"] #brand-r { right: 11.8%; }
+html[data-skin="hifi"] #brand-c {
+  left: 8.39%;
+  width: 80.77%;
+  top: 4.5%;
+  text-align: center;
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: 0.4em;
+}
+html[data-skin="hifi"] #grille {
+  display: block;
+  left: 7.19%;
+  top: 33%;
+  width: 83.08%;
+  height: 51.4%;
+  border-radius: 8px;
+  background:
+    linear-gradient(115deg, rgba(255,255,255,0.07) 0 26%, transparent 26%),
+    radial-gradient(ellipse at 50% 25%, rgba(30, 100, 130, 0.5), transparent 72%),
+    linear-gradient(#071014, #03080a);
+  box-shadow: inset 0 0 0 2px #000, inset 0 0 34px rgba(0,0,0,0.9), var(--chrome-ring), 0 8px 14px rgba(0,0,0,0.4);
+}
+html[data-skin="hifi"] #timecode {
+  left: 65.34%;
+  top: 8.4%;
+  width: 23.82%;
+  height: 7.9%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 22px;
+  border-radius: 6px;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(40, 110, 140, 0.5), transparent 72%),
+    linear-gradient(#071014, #03080a);
+  box-shadow: inset 0 0 0 2px #000, inset 0 0 20px rgba(0,0,0,0.85), var(--chrome-ring);
+  color: #8ff0ff;
+  font-weight: 500;
+  font-size: 46px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  text-shadow: 0 0 8px #35d8ff, 0 0 22px rgba(53, 216, 255, 0.55);
+}
+html[data-skin="hifi"] #btn-metronome {
+  left: 8.39%;
+  top: 10%;
+  width: 30%;
+  height: 4.88%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  background: linear-gradient(#0b1418, #04090b);
+  box-shadow: inset 0 0 0 2px #000, inset 0 0 14px rgba(0,0,0,0.85), var(--chrome-ring);
+  color: #4b5c63;
+  font-weight: 700;
+  font-size: 23px;
+  letter-spacing: 0.14em;
+  white-space: nowrap;
+}
+html[data-skin="hifi"] #btn-metronome:active { transform: translateY(1px); }
+html[data-skin="hifi"] #btn-metronome.is-active {
+  color: #ffe1bd;
+  background:
+    radial-gradient(ellipse at 50% 50%, rgba(255, 140, 40, 0.5), transparent 78%),
+    linear-gradient(#1d1007, #0e0803);
+  text-shadow: 0 0 10px #ff9a3a, 0 0 24px rgba(255, 154, 58, 0.75);
+}
+html[data-skin="hifi"] .btn {
+  top: 19.73%;
+  height: 10.73%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  --glow: var(--cyan);
+  --glow-a: rgba(86, 228, 255, 0.7);
+  color: var(--ink);
+  background:
+    radial-gradient(circle at 50% 50%, transparent 0 64%, rgba(0,0,0,0.4) 65% 67%, transparent 68%),
+    repeating-conic-gradient(from 0deg, #f8f8f9 0deg 2.5deg, #9a9da1 2.5deg 5deg);
+  box-shadow: 0 0 0 1px #4f5256, 0 9px 12px rgba(0,0,0,0.65), inset 0 0 0 2px rgba(255,255,255,0.35);
+  transition: transform 60ms;
+}
+html[data-skin="hifi"] .btn::before {
+  content: '';
+  position: absolute;
+  inset: 9px;
+  border-radius: 50%;
+  background: conic-gradient(from 20deg, #cfd1d4, #f8f8f9, #b4b7bb, #f2f2f3, #c3c6c9, #fafafa, #cfd1d4);
+  box-shadow: inset 0 2px 3px rgba(255,255,255,0.9), inset 0 -3px 6px rgba(0,0,0,0.35), 0 0 0 1px rgba(0,0,0,0.4);
+}
+html[data-skin="hifi"] .btn::after {
+  content: '';
+  position: absolute;
+  inset: 9px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 38%, #20292e, #070a0c 80%);
+  box-shadow: inset 0 0 12px rgba(0,0,0,0.9);
+  opacity: 0;
+  transition: opacity 60ms;
+}
+html[data-skin="hifi"] .btn svg,
+html[data-skin="hifi"] .btn .icon-undo-label { position: relative; z-index: 2; }
+html[data-skin="hifi"] .btn svg { width: 46%; height: 46%; }
+html[data-skin="hifi"] .btn:active { transform: scale(0.96); }
+html[data-skin="hifi"] .btn.is-active,
+html[data-skin="hifi"] .btn.is-recording {
+  color: var(--glow);
+  box-shadow: 0 0 0 1px #4f5256, 0 0 24px 6px var(--glow-a), 0 9px 12px rgba(0,0,0,0.65), inset 0 0 0 2px rgba(255,255,255,0.35);
+}
+html[data-skin="hifi"] .btn.is-active::after,
+html[data-skin="hifi"] .btn.is-recording::after { opacity: 1; }
+html[data-skin="hifi"] .btn.is-active svg,
+html[data-skin="hifi"] .btn.is-recording svg { filter: drop-shadow(0 0 6px var(--glow)); }
+html[data-skin="hifi"] .btn-square { width: 7.46%; }
+html[data-skin="hifi"] #btn-loop { left: 8.39%;  --glow: var(--red);  --glow-a: rgba(255, 65, 54, 0.7); }
+html[data-skin="hifi"] #btn-record { left: 16.53%; width: 15.59%; border-radius: 44px; --glow: var(--red); --glow-a: rgba(255, 65, 54, 0.7);
+  background: linear-gradient(#f6f6f7, #c9cbce 50%, #e4e5e7); }
+html[data-skin="hifi"] #btn-record::before,
+html[data-skin="hifi"] #btn-record::after { border-radius: 36px; inset: 8px; }
+html[data-skin="hifi"] #btn-record::before {
+  background:
+    repeating-linear-gradient(0deg, rgba(255,255,255,0.25) 0 1px, rgba(0,0,0,0.06) 1px 2px),
+    linear-gradient(#e3e4e6, #b9bcc0);
+}
+html[data-skin="hifi"] #btn-play { left: 32.8%;  --glow: var(--teal); --glow-a: rgba(61, 245, 184, 0.65); }
+html[data-skin="hifi"] #btn-stop { left: 40.93%; }
+html[data-skin="hifi"] #btn-rewind { left: 57.2%; }
+html[data-skin="hifi"] #btn-marker { left: 65.35%; }
+html[data-skin="hifi"] #btn-forward { left: 73.49%; }
+html[data-skin="hifi"] #btn-undo { left: 81.61%; flex-direction: column; gap: 0; }
+html[data-skin="hifi"] #btn-undo svg { width: 36%; height: 36%; }
+html[data-skin="hifi"] #btn-undo .icon-undo-label { font-weight: 700; font-size: 13px; letter-spacing: 0.06em; margin-top: -1px; }
+@keyframes hifiFlashLit { 0% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes hifiFlashGlow {
+  0% {
+    color: var(--glow);
+    transform: scale(0.96);
+    box-shadow: 0 0 0 1px #4f5256, 0 0 24px 6px var(--glow-a), 0 9px 12px rgba(0,0,0,0.65), inset 0 0 0 2px rgba(255,255,255,0.35);
+  }
+  100% {
+    color: var(--ink);
+    transform: scale(1);
+    box-shadow: 0 0 0 1px #4f5256, 0 0 0 0 rgba(0,0,0,0), 0 9px 12px rgba(0,0,0,0.65), inset 0 0 0 2px rgba(255,255,255,0.35);
+  }
+}
+html[data-skin="hifi"] .btn.is-flashing { animation: hifiFlashGlow 420ms ease-out; }
+html[data-skin="hifi"] .btn.is-flashing::after { animation: hifiFlashLit 420ms ease-out; }
+html[data-skin="hifi"] .track-meter {
+  top: 34.78%;
+  height: 48.19%;
+  border-radius: 6px;
+  background: linear-gradient(rgba(14, 50, 66, 0.55), rgba(5, 22, 30, 0.75));
+  border: 1px solid rgba(110, 220, 255, 0.35);
+  box-shadow: inset 0 0 18px rgba(0,0,0,0.7), 0 0 10px rgba(60, 200, 255, 0.15);
+  overflow: hidden;
+}
+html[data-skin="hifi"] .track-meter::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    repeating-linear-gradient(to top, #8febff 0, #8febff 2px, transparent 2px, transparent 16.6667%),
+    repeating-linear-gradient(to top, #8febff 0, #8febff 2px, transparent 2px, transparent 16.6667%),
+    repeating-linear-gradient(to top, #8febff 0, #8febff 1px, transparent 1px, transparent 8.3333%),
+    repeating-linear-gradient(to top, #8febff 0, #8febff 1px, transparent 1px, transparent 8.3333%);
+  background-size: 15px 100%, 15px 100%, 8px 100%, 8px 100%;
+  background-position: left top, right top, left top, right top;
+  background-repeat: no-repeat;
+  opacity: 0.7;
+}
+html[data-skin="hifi"] .track-meter::after {
+  content: '';
+  position: absolute;
+  left: 24%;
+  width: 52%;
+  top: 0;
+  bottom: 0;
+  z-index: 0;
+  background: rgba(70, 170, 210, 0.08);
+  box-shadow: inset 0 0 8px rgba(0,0,0,0.6);
+}
+html[data-skin="hifi"] .track-meter-fill {
+  position: absolute;
+  left: 24%;
+  bottom: 0;
+  width: 52%;
+  height: 0%;
+  z-index: 1;
+  background: linear-gradient(
+    to top,
+    #12c9b8 0%,
+    #3fe0e8 70%,
+    #ffb02e 70%,
+    #ffb02e 90%,
+    #ff3b30 90%,
+    #ff3b30 100%
+  );
+  
+  background-size: 100% 395px;
+  background-position: bottom;
+  box-shadow: 0 0 14px rgba(70, 225, 255, 0.55);
+}
+html[data-skin="hifi"] .track-meter-fill::after {
+  content: '';
+  position: absolute;
+  left: -46%;
+  width: 192%;
+  top: -2px;
+  height: 3px;
+  background: #ffb36b;
+  border-radius: 2px;
+  box-shadow: 0 0 8px #ff7a2a, 0 0 2px #fff0dc;
+}
+html[data-skin="hifi"] .track-name {
+  top: 85.2%;
+  height: 3.2%;
+  padding: 0 4px;
+  line-height: 24px;
+  text-align: center;
+  color: #101214;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.75);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+html[data-skin="hifi"] .track-label {
+  top: 88.4%;
+  height: 3.2%;
+  line-height: 22px;
+  text-align: center;
+  color: #3a3d40;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.14em;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.7);
+}
+html[data-skin="hifi"] #btn-settings {
+  left: 96.5%;
+  top: 1.5%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.8;
+}
+html[data-skin="hifi"] #btn-settings svg { width: 100%; height: 100%; stroke: #b4bcc2; }
+html[data-skin="hifi"] #btn-settings:active { opacity: 1; }
+html[data-skin="hifi"] #track-settings-overlay {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(3, 7, 9, 0.88);
+  z-index: 10;
+  align-items: center;
+  justify-content: center;
+}
+html[data-skin="hifi"] #track-settings-overlay.is-open { display: flex; }
+html[data-skin="hifi"] #track-settings-panel {
+  width: 420px;
+  max-height: 80%;
+  background: linear-gradient(#0b1519, #04090b);
+  border-radius: 8px;
+  box-shadow: inset 0 0 0 2px #000, var(--chrome-ring), 0 12px 30px rgba(0,0,0,0.7);
+  padding: 22px;
+  display: flex;
+  flex-direction: column;
+}
+html[data-skin="hifi"] #track-settings-title,
+html[data-skin="hifi"] #skin-title {
+  color: #8ff0ff;
+  text-shadow: 0 0 8px rgba(53, 216, 255, 0.6);
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: 0.12em;
+  text-align: center;
+  margin-bottom: 14px;
+}
+html[data-skin="hifi"] #track-settings-list { overflow-y: auto; }
+html[data-skin="hifi"] .track-settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 10px;
+  border-bottom: 1px solid rgba(110, 220, 255, 0.18);
+  font-size: 20px;
+  font-weight: 500;
+  color: #d4f6ff;
+}
+html[data-skin="hifi"] .track-settings-row .switch {
+  width: 46px;
+  height: 26px;
+  border-radius: 13px;
+  border: 2px solid #5b6d74;
+  position: relative;
+  flex-shrink: 0;
+}
+html[data-skin="hifi"] .track-settings-row .switch .knob {
+  position: absolute;
+  top: 1px;
+  left: 1px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #5b6d74;
+  transition: left 120ms ease-out;
+}
+html[data-skin="hifi"] .track-settings-row.is-visible .switch { border-color: var(--cyan); box-shadow: 0 0 8px rgba(86, 228, 255, 0.5); }
+html[data-skin="hifi"] .track-settings-row.is-visible .switch .knob { left: 19px; background: var(--cyan); }
+html[data-skin="hifi"] #skin-picker { display: flex; gap: 8px; margin-bottom: 20px; }
+html[data-skin="hifi"] .skin-opt {
+  flex: 1;
+  text-align: center;
+  padding: 12px 6px;
+  border: 2px solid #3d5058;
+  border-radius: 8px;
+  color: #8aa3ad;
+  font-weight: 700;
+  font-size: 16px;
+  letter-spacing: 0.08em;
+  background: #060d10;
+}
+html[data-skin="hifi"] .skin-opt.is-selected {
+  border-color: var(--cyan);
+  color: #8ff0ff;
+  text-shadow: 0 0 8px rgba(53, 216, 255, 0.7);
+  box-shadow: 0 0 10px rgba(86, 228, 255, 0.4);
+}
+html[data-skin="hifi"] #track-settings-done {
+  margin-top: 16px;
+  text-align: center;
+  padding: 12px;
+  border-radius: 8px;
+  background: linear-gradient(#e9eaec, #b9bcc0);
+  color: #15181a;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  box-shadow: 0 0 0 1px #4f5256, 0 4px 6px rgba(0,0,0,0.5);
+}
+html[data-skin="hifi"] #track-settings-done:active { filter: brightness(0.9); }
+html[data-skin="hifi"] #faceplate,
+html[data-skin="hifi"] .screw { display: block; }
+/* ===== refresh-from-project button (all looks) ===== */
+#track-refresh {
+  margin-bottom: 12px;
+  padding: 12px 8px;
+  text-align: center;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  border-radius: 10px;
+  cursor: pointer;
+}
+html[data-skin="classic"] #track-refresh {
+  border: 2px solid #666;
+  color: #ddd;
+  background: #1d1d1d;
+}
+html[data-skin="classic"] #track-refresh:active { filter: brightness(1.5); }
+html[data-skin="retro"] #track-refresh {
+  border: 2px solid var(--brass);
+  color: var(--cream);
+  background: var(--maroon-dk);
+}
+html[data-skin="retro"] #track-refresh:active { filter: brightness(1.4); }
+html[data-skin="hifi"] #track-refresh {
+  border: 2px solid #3d5058;
+  border-radius: 8px;
+  color: #8ff0ff;
+  background: #060d10;
+  text-shadow: 0 0 8px rgba(53, 216, 255, 0.6);
+}
+html[data-skin="hifi"] #track-refresh:active { box-shadow: 0 0 12px rgba(86, 228, 255, 0.6); border-color: var(--cyan); }
 </style>
 </head>
 <body>
@@ -408,69 +1254,81 @@ html, body {
 <div class="viewport">
   <div class="stage" id="stage">
 
-    <div class="el" id="btn-metronome">CLICK!!!</div>
-    <div class="el" id="timecode">00:00:00</div>
+    <div id="content">
+      <div id="faceplate"></div>
+      <div class="el" id="grille"></div>
+      <i class="el screw" style="left:7.1%; top:3.7%"></i>
+      <i class="el screw" style="left:89.9%; top:3.7%"></i>
+      <i class="el screw" style="left:7.1%; top:92.0%"></i>
+      <i class="el screw" style="left:89.9%; top:92.0%"></i>
+      <div class="el" id="brand-l">Model KR-8</div>
+      <div class="el" id="brand-c">KIT REMOTE</div>
+      <div class="el" id="brand-r">Tracking Console</div>
 
-    <!-- transport row -->
-    <div class="el btn btn-square" id="btn-loop">
-      <svg viewBox="0 0 24 24" fill="none" stroke="var(--col-loop)" stroke-width="2">
-        <path d="M17 2l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M21 6H10a6 6 0 0 0-6 6" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M7 22l-4-4 4-4" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M3 18h11a6 6 0 0 0 6-6" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
+      <div class="el" id="btn-metronome">CLICK!!!</div>
+      <div class="el" id="timecode">00:00:00</div>
+
+      <!-- transport row -->
+      <div class="el btn btn-square" id="btn-loop">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 2l4 4-4 4"/>
+          <path d="M21 6H10a6 6 0 0 0-6 6"/>
+          <path d="M7 22l-4-4 4-4"/>
+          <path d="M3 18h11a6 6 0 0 0 6-6"/>
+        </svg>
+      </div>
+
+      <div class="el btn" id="btn-record">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <circle class="icon-dot" cx="12" cy="12" r="7"/>
+        </svg>
+      </div>
+
+      <div class="el btn btn-square" id="btn-play">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M6 3l15 9-15 9V3z"/>
+        </svg>
+      </div>
+
+      <div class="el btn btn-square" id="btn-stop">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <rect x="5" y="5" width="14" height="14"/>
+        </svg>
+      </div>
+
+      <div class="el btn btn-square" id="btn-rewind">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <rect x="6" y="6" width="3" height="12"/>
+          <path d="M20 6l-10 6 10 6V6z"/>
+        </svg>
+      </div>
+
+      <div class="el btn btn-square" id="btn-marker">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/>
+        </svg>
+      </div>
+
+      <div class="el btn btn-square" id="btn-forward">
+        <svg viewBox="0 0 24 24" fill="currentColor">
+          <path d="M4 6l10 6-10 6V6z"/>
+          <rect x="15" y="6" width="3" height="12"/>
+        </svg>
+      </div>
+
+      <div class="el btn btn-square" id="btn-undo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 7L4 12l5 5"/>
+          <path d="M4 12h11a5 5 0 0 1 0 10h-1"/>
+        </svg>
+        <div class="icon-undo-label">UNDO</div>
+      </div>
+
+      <!-- tracks (generated from the settings selection) -->
+      <div id="tracks"></div>
     </div>
 
-    <div class="el btn" id="btn-record">
-      <svg viewBox="0 0 24 24">
-        <circle class="icon-dot" cx="12" cy="12" r="7" fill="var(--col-record)"/>
-      </svg>
-    </div>
-
-    <div class="el btn btn-square" id="btn-play">
-      <svg viewBox="0 0 24 24">
-        <path d="M6 3l15 9-15 9V3z" fill="var(--col-play)"/>
-      </svg>
-    </div>
-
-    <div class="el btn btn-square" id="btn-stop">
-      <svg viewBox="0 0 24 24">
-        <rect x="5" y="5" width="14" height="14" fill="var(--col-stop)"/>
-      </svg>
-    </div>
-
-    <div class="el btn btn-square" id="btn-rewind">
-      <svg viewBox="0 0 24 24" fill="var(--col-rewind)">
-        <rect x="6" y="6" width="3" height="12"/>
-        <path d="M20 6l-10 6 10 6V6z"/>
-      </svg>
-    </div>
-
-    <div class="el btn btn-square" id="btn-marker">
-      <svg viewBox="0 0 24 24" fill="var(--col-marker)">
-        <path d="M12 2a7 7 0 0 0-7 7c0 5.25 7 13 7 13s7-7.75 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/>
-      </svg>
-    </div>
-
-    <div class="el btn btn-square" id="btn-forward">
-      <svg viewBox="0 0 24 24" fill="var(--col-forward)">
-        <path d="M4 6l10 6-10 6V6z"/>
-        <rect x="15" y="6" width="3" height="12"/>
-      </svg>
-    </div>
-
-    <div class="el btn btn-square" id="btn-undo">
-      <svg viewBox="0 0 24 24" fill="none" stroke="var(--col-undo)" stroke-width="2">
-        <path d="M9 7L4 12l5 5" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M4 12h11a5 5 0 0 1 0 10h-1" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      <div class="icon-undo-label" style="color: var(--col-undo);">UNDO</div>
-    </div>
-
-    <!-- tracks (generated 1-10) -->
-    <div id="tracks"></div>
-
-    <div class="el" id="btn-settings" title="Show/hide tracks">
+    <div class="el" id="btn-settings" title="Settings">
       <svg viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2">
         <circle cx="12" cy="12" r="3"/>
         <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
@@ -479,7 +1337,10 @@ html, body {
 
     <div id="track-settings-overlay">
       <div id="track-settings-panel">
+        <div id="skin-title">LOOK</div>
+        <div id="skin-picker"></div>
         <div id="track-settings-title">SHOW / HIDE TRACKS</div>
+        <div id="track-refresh">&#8635; REFRESH FROM CURRENT PROJECT</div>
         <div id="track-settings-list"></div>
         <div id="track-settings-done">DONE</div>
       </div>
@@ -510,7 +1371,8 @@ function saveVisibleTracks(arr) {
 }
 
 var VISIBLE_TRACKS = loadVisibleTracks();
-var knownTracks = {}; // REAPER track number -> last-seen track name, populated live
+var knownTracks = {}; // REAPER track number -> name, mirrors whatever project is active right now
+var knownSig = '';    // snapshot of knownTracks, to notice when the project/tracks change
 
 // original 10-track grid, from the Illustrator spec export
 var GRID_LEFT = 8.39;    // % - left edge of track 1
@@ -521,8 +1383,23 @@ var tracksEl = document.getElementById('tracks');
 var trackNameEls = {};
 var trackMeterFillEls = {};
 
+// The tracks to actually draw: the saved selection, limited to tracks the
+// current project really has, so switching project tabs can't leave empty
+// ghost columns. If none of the saved selection exists in this project, fall
+// back to its first MAX_VISIBLE tracks (without overwriting the saved choice).
+function visibleList() {
+  var known = Object.keys(knownTracks).map(Number).sort(function (a, b) { return a - b; });
+  var sel = (VISIBLE_TRACKS || []).slice().sort(function (a, b) { return a - b; });
+  if (!known.length) return sel; // no data yet (startup): draw the saved selection
+  var live = sel.filter(function (n) { return knownTracks.hasOwnProperty(n); });
+  return live.length ? live : known.slice(0, MAX_VISIBLE);
+}
+
+var renderedSig = '';
+
 function rebuildTracks() {
-  var visible = (VISIBLE_TRACKS || []).slice().sort(function (a, b) { return a - b; });
+  var visible = visibleList();
+  renderedSig = visible.join(',');
   if (!visible.length) {
     tracksEl.innerHTML = '';
     trackNameEls = {};
@@ -553,6 +1430,7 @@ function rebuildTracks() {
     var t = visible[j];
     trackNameEls[t] = document.querySelector('.track-name[data-track="' + t + '"]');
     trackMeterFillEls[t] = document.querySelector('.track-meter[data-track="' + t + '"] .track-meter-fill');
+    if (knownTracks.hasOwnProperty(t)) trackNameEls[t].textContent = knownTracks[t];
   }
 }
 rebuildTracks();
@@ -566,32 +1444,41 @@ var settingsTitle = document.getElementById('track-settings-title');
 
 function renderSettingsList() {
   var nums = Object.keys(knownTracks).map(Number).sort(function (a, b) { return a - b; });
-  var selectedCount = (VISIBLE_TRACKS || []).length;
-  settingsTitle.textContent = 'SHOW / HIDE TRACKS (' + selectedCount + '/' + MAX_VISIBLE + ')';
+  var shown = visibleList();
+  settingsTitle.textContent = 'SHOW / HIDE TRACKS (' + shown.length + '/' + MAX_VISIBLE + ')';
 
   if (!nums.length) {
-    settingsList.innerHTML = '<div style="color:#666; text-align:center; padding:20px; font-size:16px;">No tracks found yet - make sure a project with tracks is open in REAPER.</div>';
+    settingsList.innerHTML = '<div style="color:#8a8a8a; text-align:center; padding:20px; font-size:16px;">No tracks found yet - make sure a project with tracks is open in REAPER.</div>';
     return;
   }
 
   var html = '';
   for (var i = 0; i < nums.length; i++) {
     var n = nums[i];
-    var visible = VISIBLE_TRACKS && VISIBLE_TRACKS.indexOf(n) !== -1;
+    var visible = shown.indexOf(n) !== -1;
     html +=
       '<div class="track-settings-row' + (visible ? ' is-visible' : '') + '" data-track="' + n + '">' +
-        '<span>' + n + '. ' + knownTracks[n] + '</span>' +
+        '<span>' + n + '. ' + (knownTracks[n] || '(unnamed)') + '</span>' +
         '<span class="switch"><span class="knob"></span></span>' +
       '</div>';
   }
   settingsList.innerHTML = html;
 }
 
+// re-render the open panel in place (keeps the scroll position) when the
+// active project's tracks change underneath it
+function refreshSettingsListIfOpen() {
+  if (!settingsOverlay.classList.contains('is-open')) return;
+  var top = settingsList.scrollTop;
+  renderSettingsList();
+  settingsList.scrollTop = top;
+}
+
 settingsList.addEventListener('click', function (e) {
   var row = e.target.closest('.track-settings-row');
   if (!row) return;
   var n = parseInt(row.getAttribute('data-track'), 10);
-  if (!VISIBLE_TRACKS) VISIBLE_TRACKS = [];
+  VISIBLE_TRACKS = visibleList(); // toggle against what's actually on screen, dropping stale numbers
   var idx = VISIBLE_TRACKS.indexOf(n);
   if (idx === -1) {
     if (VISIBLE_TRACKS.length >= MAX_VISIBLE) return; // at cap - deselect one first
@@ -611,6 +1498,52 @@ document.getElementById('btn-settings').addEventListener('click', function () {
 document.getElementById('track-settings-done').addEventListener('click', function () {
   settingsOverlay.classList.remove('is-open');
 });
+
+// Hard reset to whatever project REAPER currently has active: forget every
+// track gathered so far, drop the saved selection, and re-read the track
+// list straight away. The selection restarts as that project's first
+// MAX_VISIBLE tracks, to be adjusted from the list below.
+var refreshBtn = document.getElementById('track-refresh');
+var refreshLabel = refreshBtn.innerHTML;
+var refreshTimer = null;
+refreshBtn.addEventListener('click', function () {
+  knownTracks = {};
+  knownSig = '';
+  VISIBLE_TRACKS = null;
+  try { localStorage.removeItem(VISIBLE_TRACKS_KEY); } catch (e) {}
+  rebuildTracks();
+  renderSettingsList();
+  wwr_req('TRACK'); // ask now instead of waiting for the next poll tick
+  refreshBtn.textContent = 'REFRESHED ✓';
+  clearTimeout(refreshTimer);
+  refreshTimer = setTimeout(function () { refreshBtn.innerHTML = refreshLabel; }, 1400);
+});
+
+// ---------- skin switcher ----------
+
+var SKINS = [['classic', 'CLASSIC'], ['retro', 'RADIO'], ['hifi', 'HI-FI']];
+var skinPicker = document.getElementById('skin-picker');
+
+function renderSkinPicker() {
+  var cur = document.documentElement.getAttribute('data-skin');
+  var html = '';
+  for (var i = 0; i < SKINS.length; i++) {
+    html += '<div class="skin-opt' + (SKINS[i][0] === cur ? ' is-selected' : '') +
+            '" data-skin="' + SKINS[i][0] + '">' + SKINS[i][1] + '</div>';
+  }
+  skinPicker.innerHTML = html;
+}
+
+skinPicker.addEventListener('click', function (e) {
+  var opt = e.target.closest('.skin-opt');
+  if (!opt) return;
+  var skin = opt.getAttribute('data-skin');
+  document.documentElement.setAttribute('data-skin', skin);
+  try { localStorage.setItem('kitRemoteSkin', skin); } catch (err) {}
+  renderSkinPicker();
+});
+
+document.getElementById('btn-settings').addEventListener('click', renderSkinPicker);
 
 // scale the fixed 1180x820 stage to fit the viewport without scrolling.
 // Uses visualViewport when available - it reflects the actual visible area
@@ -635,8 +1568,8 @@ setTimeout(fitStage, 300); // re-check after Safari's chrome finishes animating 
 
 // ---------- REAPER live wiring ----------
 // Requires this page to be served by REAPER's own web server (e.g.
-// http://<your-computer's-LAN-IP>:8080/index.html) - wwr_req's "/_/..."
-// calls are relative and do nothing when opened as a local file:// page.
+// http://<your-computer's-LAN-IP>:8080/index.html) - wwr_req's "/_/..." calls are
+// relative and do nothing when opened as a local file:// page.
 
 var ACTIONS = {
   play: 40044,    // Transport: Play/stop (toggle)
@@ -709,6 +1642,8 @@ function formatClock(totalSeconds) {
 
 function wwr_onreply(results) {
   var lines = results.split('\n');
+  var gotTracks = false;
+  var seenNow = {};
   for (var i = 0; i < lines.length; i++) {
     var tok = lines[i].split('\t');
     if (tok[0] === 'TRANSPORT' && tok.length > 3) {
@@ -733,17 +1668,15 @@ function wwr_onreply(results) {
       if (trackNum < 1) continue; // skip master (0)
 
       var trackName = tok[2];
-      if (trackName) knownTracks[trackNum] = trackName;
+      gotTracks = true;
+      seenNow[trackNum] = true;
+      knownTracks[trackNum] = trackName;
 
-      if (VISIBLE_TRACKS && VISIBLE_TRACKS.indexOf(trackNum) !== -1) {
-        var meterPos = parseInt(tok[7], 10) / 10; // dB
+      var nameEl = trackNameEls[trackNum];
+      if (nameEl) nameEl.textContent = trackName;
 
-        var nameEl = trackNameEls[trackNum];
-        if (nameEl && trackName) nameEl.textContent = trackName;
-
-        var fillEl = trackMeterFillEls[trackNum];
-        if (fillEl) fillEl.style.height = meterDbToPercent(meterPos) + '%';
-      }
+      var fillEl = trackMeterFillEls[trackNum];
+      if (fillEl) fillEl.style.height = meterDbToPercent(parseInt(tok[7], 10) / 10) + '%';
     } else if (tok[0] === 'CMDSTATE' && tok.length > 2) {
       if (parseInt(tok[1], 10) === ACTIONS.metronome) {
         btnMetronome.classList.toggle('is-active', parseInt(tok[2], 10) > 0);
@@ -751,16 +1684,31 @@ function wwr_onreply(results) {
     }
   }
 
-  // first time we've ever seen real session tracks with no saved
-  // preference - default to the first MAX_VISIBLE tracks found
+  if (!gotTracks) return;
+
+  // every TRACK reply lists the whole active project, so anything we know
+  // about that isn't in it any more belongs to a different project tab
+  for (var k in knownTracks) {
+    if (!seenNow[k]) delete knownTracks[k];
+  }
+
+  // first time we've seen real session tracks with no saved preference -
+  // default to the first MAX_VISIBLE tracks found
   if (VISIBLE_TRACKS === null) {
     var seen = Object.keys(knownTracks).map(Number);
     if (seen.length) {
       seen.sort(function (a, b) { return a - b; });
       VISIBLE_TRACKS = seen.slice(0, MAX_VISIBLE);
       saveVisibleTracks(VISIBLE_TRACKS);
-      rebuildTracks();
     }
+  }
+
+  // project switched or tracks added/removed/renamed: redraw only if needed
+  var sig = JSON.stringify(knownTracks);
+  if (sig !== knownSig) {
+    knownSig = sig;
+    if (visibleList().join(',') !== renderedSig) rebuildTracks();
+    refreshSettingsListIfOpen();
   }
 }
 

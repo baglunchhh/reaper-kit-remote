@@ -1,0 +1,399 @@
+{
+  "transport-stop": {
+    "left": 40.93,
+    "top": 19.73,
+    "width": 7.46,
+    "height": 10.73
+  },
+  "clipgroup": {
+    "left": 41.11,
+    "top": 19.73,
+    "width": 7.11,
+    "height": 10.73
+  },
+  "transport-record": {
+    "left": 41.11,
+    "top": 19.73,
+    "width": 7.11,
+    "height": 10.73
+  },
+  "timecode": {
+    "left": 65.34,
+    "top": 8.58,
+    "width": 23.82,
+    "height": 7.49,
+    "text": "00:00:00",
+    "fontFamily": "Gotham",
+    "fontSize": 56.1648292541504
+  },
+  "project-name": {
+    "left": 8.39,
+    "top": 10,
+    "width": 23.96,
+    "height": 4.88,
+    "text": "PROJECT NAME",
+    "fontFamily": "Gotham",
+    "fontSize": 36.5887107849121
+  },
+  "track-10-name": {
+    "left": 82.98,
+    "top": 85.42,
+    "width": 4.6,
+    "height": 2.56,
+    "text": "NAME",
+    "fontFamily": "Gotham",
+    "fontSize": 18
+  },
+  "track-9-name": {
+    "left": 74.85,
+    "top": 85.42,
+    "width": 4.6,
+    "height": 2.56,
+    "text": "NAME",
+    "fontFamily": "Gotham",
+    "fontSize": 18
+  },
+  "track-8-name": {
+    "left": 66.71,
+    "top": 85.42,
+    "width": 4.6,
+    "height": 2.56,
+    "text": "NAME",
+    "fontFamily": "Gotham",
+    "fontSize": 18
+  },
+  "track-7-name": {
+    "left": 58.58,
+    "top": 85.42,
+    "width": 4.6,
+    "height": 2.56,
+    "text": "NAME",
+    "fontFamily": "Gotham",
+    "fontSize": 18
+  },
+  "track-6-name": {
+    "left": 50.44,
+    "top": 85.42,
+    "width": 4.6,
+    "height": 2.56,
+    "text": "NAME",
+    "fontFamily": "Gotham",
+    "fontSize": 18
+  },
+  "track-5-name": {
+    "left": 42.3,
+    "top": 85.42,
+    "width": 4.6,
+    "height": 2.56,
+    "text": "NAME",
+    "fontFamily": "Gotham",
+    "fontSize": 18
+  },
+  "track-4-name": {
+    "left": 34.17,
+    "top": 85.42,
+    "width": 4.6,
+    "height": 2.56,
+    "text": "NAME",
+    "fontFamily": "Gotham",
+    "fontSize": 18
+  },
+  "track-3-name": {
+    "left": 26.03,
+    "top": 85.42,
+    "width": 4.6,
+    "height": 2.56,
+    "text": "NAME",
+    "fontFamily": "Gotham",
+    "fontSize": 18
+  },
+  "track-2-name": {
+    "left": 17.9,
+    "top": 85.42,
+    "width": 4.6,
+    "height": 2.56,
+    "text": "NAME",
+    "fontFamily": "Gotham",
+    "fontSize": 18
+  },
+  "track-1-name": {
+    "left": 9.76,
+    "top": 85.42,
+    "width": 4.6,
+    "height": 2.56,
+    "text": "NAME",
+    "fontFamily": "Gotham",
+    "fontSize": 18
+  },
+  "TRACK-10-LABEL": {
+    "left": 81.64,
+    "top": 89.18,
+    "width": 7.28,
+    "height": 2.56,
+    "text": "TRACK 10",
+    "fontFamily": "Gotham",
+    "fontSize": 18
+  },
+  "TRACK-9-LABEL": {
+    "left": 73.85,
+    "top": 89.18,
+    "width": 6.59,
+    "height": 2.56,
+    "text": "TRACK 9",
+    "fontFamily": "Gotham",
+    "fontSize": 18
+  },
+  "TRACK-8-LABEL": {
+    "left": 65.74,
+    "top": 89.18,
+    "width": 6.54,
+    "height": 2.56,
+    "text": "TRACK 8",
+    "fontFamily": "Gotham",
+    "fontSize": 18
+  },
+  "TRACK-7-LABEL": {
+    "left": 57.62,
+    "top": 89.18,
+    "width": 6.52,
+    "height": 2.56,
+    "text": "TRACK 7",
+    "fontFamily": "Gotham",
+    "fontSize": 18
+  },
+  "TRACK-6-LABEL": {
+    "left": 49.45,
+    "top": 89.18,
+    "width": 6.59,
+    "height": 2.56,
+    "text": "TRACK 6",
+    "fontFamily": "Gotham",
+    "fontSize": 18
+  },
+  "TRACK-5-LABEL": {
+    "left": 41.34,
+    "top": 89.18,
+    "width": 6.54,
+    "height": 2.56,
+    "text": "TRACK 5",
+    "fontFamily": "Gotham",
+    "fontSize": 18
+  },
+  "TRACK-4-LABEL": {
+    "left": 33.16,
+    "top": 89.18,
+    "width": 6.63,
+    "height": 2.56,
+    "text": "TRACK 4",
+    "fontFamily": "Gotham",
+    "fontSize": 18
+  },
+  "TRACK-3-LABEL": {
+    "left": 25.07,
+    "top": 89.18,
+    "width": 6.53,
+    "height": 2.56,
+    "text": "TRACK 3",
+    "fontFamily": "Gotham",
+    "fontSize": 18
+  },
+  "TRACK-2-LABEL": {
+    "left": 16.93,
+    "top": 89.18,
+    "width": 6.53,
+    "height": 2.56,
+    "text": "TRACK 2",
+    "fontFamily": "Gotham",
+    "fontSize": 18
+  },
+  "TRACK-1-LABEL": {
+    "left": 8.95,
+    "top": 89.18,
+    "width": 6.22,
+    "height": 2.56,
+    "text": "TRACK 1",
+    "fontFamily": "Gotham",
+    "fontSize": 18
+  },
+  "track-10-meter": {
+    "left": 81.61,
+    "top": 34.78,
+    "width": 7.46,
+    "height": 48.19,
+    "stroke": "#808080",
+    "strokeWidth": 2
+  },
+  "track-9-meter": {
+    "left": 73.48,
+    "top": 34.78,
+    "width": 7.46,
+    "height": 48.19,
+    "stroke": "#808080",
+    "strokeWidth": 2
+  },
+  "track-8-meter": {
+    "left": 65.34,
+    "top": 34.78,
+    "width": 7.46,
+    "height": 48.19,
+    "stroke": "#808080",
+    "strokeWidth": 2
+  },
+  "track-7-meter": {
+    "left": 57.21,
+    "top": 34.78,
+    "width": 7.46,
+    "height": 48.19,
+    "stroke": "#808080",
+    "strokeWidth": 2
+  },
+  "track-6-meter": {
+    "left": 49.07,
+    "top": 34.78,
+    "width": 7.46,
+    "height": 48.19,
+    "stroke": "#808080",
+    "strokeWidth": 2
+  },
+  "track-5-meter": {
+    "left": 40.93,
+    "top": 34.78,
+    "width": 7.46,
+    "height": 48.19,
+    "stroke": "#808080",
+    "strokeWidth": 2
+  },
+  "track-4-meter": {
+    "left": 32.8,
+    "top": 34.78,
+    "width": 7.46,
+    "height": 48.19,
+    "stroke": "#808080",
+    "strokeWidth": 2
+  },
+  "track-3-meter": {
+    "left": 24.66,
+    "top": 34.78,
+    "width": 7.46,
+    "height": 48.19,
+    "stroke": "#808080",
+    "strokeWidth": 2
+  },
+  "track-2-meter": {
+    "left": 16.53,
+    "top": 34.78,
+    "width": 7.46,
+    "height": 48.19,
+    "stroke": "#808080",
+    "strokeWidth": 2
+  },
+  "track-1-meter": {
+    "left": 8.39,
+    "top": 34.78,
+    "width": 7.46,
+    "height": 48.19,
+    "stroke": "#808080",
+    "strokeWidth": 2
+  },
+  "transport-undo": {
+    "left": 81.61,
+    "top": 19.73,
+    "width": 7.46,
+    "height": 10.88
+  },
+  "transport-record_2": {
+    "left": 81.79,
+    "top": 19.88,
+    "width": 7.11,
+    "height": 10.73
+  },
+  "transport-marker": {
+    "left": 65.35,
+    "top": 19.73,
+    "width": 7.46,
+    "height": 10.88,
+    "fill": "#00ffff"
+  },
+  "transport-record_3": {
+    "left": 65.5,
+    "top": 19.88,
+    "width": 7.11,
+    "height": 10.73
+  },
+  "transport-rewind": {
+    "left": 57.2,
+    "top": 19.73,
+    "width": 7.46,
+    "height": 10.88
+  },
+  "transport-record_4": {
+    "left": 57.37,
+    "top": 19.88,
+    "width": 7.11,
+    "height": 10.73
+  },
+  "transport-forward": {
+    "left": 73.49,
+    "top": 19.73,
+    "width": 7.46,
+    "height": 10.88
+  },
+  "transport-record_5": {
+    "left": 73.64,
+    "top": 19.88,
+    "width": 7.11,
+    "height": 10.73
+  },
+  "transport-loop": {
+    "left": 8.39,
+    "top": 19.73,
+    "width": 7.46,
+    "height": 10.73,
+    "stroke": "#232b2c",
+    "strokeWidth": 6.44417706173789
+  },
+  "transport-record_6": {
+    "left": 16.53,
+    "top": 19.73,
+    "width": 15.59,
+    "height": 10.73,
+    "fill": "#ff1738",
+    "stroke": "#ff1738",
+    "strokeWidth": 5
+  },
+  "transport-reserved-1": {
+    "left": 73.48,
+    "top": 19.73,
+    "width": 7.46,
+    "height": 10.73,
+    "stroke": "#15191a",
+    "strokeWidth": 5
+  },
+  "transport-play": {
+    "left": 32.8,
+    "top": 19.73,
+    "width": 7.46,
+    "height": 10.73,
+    "fill": "#40ff00",
+    "stroke": "#40ff00",
+    "strokeWidth": 5
+  },
+  "transport-record_7": {
+    "left": 32.97,
+    "top": 19.73,
+    "width": 7.11,
+    "height": 10.73
+  },
+  "transport-record_8": {
+    "left": 8.53,
+    "top": 19.73,
+    "width": 7.11,
+    "height": 10.73
+  },
+  "transport-record_9": {
+    "left": 16.53,
+    "top": 19.73,
+    "width": 15.59,
+    "height": 10.73
+  }
+}

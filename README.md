@@ -1,77 +1,94 @@
 # REAPER Kit Remote
 
-A glanceable tracking remote for REAPER, meant for a tablet mounted at a drum
-kit: transport controls, a metronome toggle, and live per-track meters/names.
-Not a mixer — no EQ, panning, or FX control.
+A glanceable tracking remote for REAPER, built for a tablet mounted at a drum kit. Big transport keys, a metronome toggle, a live timecode and per-track level meters, readable from about three feet away. It is **not a mixer**: no EQ, panning or FX control.
+
+It is a single static web page that talks to REAPER's built-in web server. There is no install, no build step and no extension.
+
+## Looks
+
+Three switchable looks (tap the gear icon, then **LOOK**). Your choice is remembered on that device.
+
+| CLASSIC (default) | RADIO | HI-FI |
+|---|---|---|
+| ![Classic](docs/screenshots/classic.png) | ![Radio](docs/screenshots/radio.png) | ![Hi-fi](docs/screenshots/hifi-active.png) |
+| Black, high-contrast outline buttons | Vintage radio: maroon faceplate, brass trim, cream piano keys and dial-window meters, on wood | Silver brushed-aluminum faceplate, chrome knurled knobs, black glass windows lit blue-green |
+
+HI-FI idle (nothing lit) and the settings panel in each look:
+
+| HI-FI idle | Settings: Classic | Settings: Radio | Settings: Hi-fi |
+|---|---|---|---|
+| ![](docs/screenshots/hifi-idle.png) | ![](docs/screenshots/settings-classic.png) | ![](docs/screenshots/settings-radio.png) | ![](docs/screenshots/settings-hifi.png) |
+
+(Screenshots use simulated meter data.)
+
+## What it does
+
+**Transport**
+- Play/stop toggle, a dedicated Stop, Record, and a Loop (repeat) toggle.
+- Jump to the previous or next marker (or the start or end of the project).
+- Insert a marker at the current position, and Undo.
+- Persistent states (play, record, loop, metronome) light up from REAPER's *confirmed* state, so they stay correct even if something else (keyboard, footswitch) changes transport.
+- One-shot buttons (stop, rewind, forward, marker, undo) flash on press.
+
+**Display**
+- Live timecode, formatted as HH:MM:SS from the raw position, so it ignores the project's ruler format.
+- A metronome toggle ("CLICK!!!") that reflects REAPER's actual on/off state.
+- Up to 10 vertical level meters with live track names. The colour zones sit at fixed dB levels (-60 to 0 dB, with the upper zones marking the loud end), and a level line rides the top of each meter.
+- Track labels always show the **real REAPER track number**, so they match your mixer.
+
+**Track picker (gear icon)**
+- Lists every track in the *currently active* project, with real names, and lets you choose up to 10 to display. The columns reflow to fill the width.
+- Switching project tabs in REAPER updates the list automatically, and tracks the current project doesn't have are dropped.
+- **Refresh from current project** button: a hard reset that forgets everything gathered so far and re-reads the active project.
+- Your selection is stored in the browser (localStorage), so no code edits are needed between sessions.
+
+**Layout**
+- Fixed 1180x820 stage that scales to fit any screen with no scrolling. Meta tags allow "Add to Home Screen" for a full-screen launch on iPad.
+- All fonts are self-hosted (Roboto Condensed, variable WOFF2). Nothing is loaded from the internet.
 
 ## Setup
 
-1. **Enable REAPER's web control surface** (if not already on):
-   Options → Preferences → Control/OSC/Web → Add → "Web browser interface".
-   Pick a port (8080 is the usual default) and set the default page to `index.html`.
+1. **Enable REAPER's web control surface** (if not already on): Options → Preferences → Control/OSC/Web → Add → "Web browser interface". Pick a port (8080 is the usual) and set the default page to `index.html`.
+2. **Copy these into your REAPER resource path's `reaper_www_root` folder** (Options → "Show REAPER resource path in explorer/finder"):
+   - `index.html`, `main.js`, the `fonts/` folder, and `Background-Wood.jpg` (only the RADIO look uses it).
+3. **Find your computer's LAN IP** (`ipconfig` on Windows, System Settings → Network on Mac).
+4. On the tablet, same WiFi, open `http://<your-computer's-IP>:8080/`.
+5. iOS: Share → **Add to Home Screen** to launch full-screen.
 
-2. **Copy these files** into your REAPER resource path's `reaper_www_root` folder:
-   - Windows: `%APPDATA%\REAPER\reaper_www_root\`
-   - Mac: `~/Library/Application Support/REAPER/reaper_www_root/`
-   - (Find your resource path via REAPER's Options menu → "Show REAPER resource path in explorer/finder")
-
-   Copy: `index.html`, `main.js`, and the whole `fonts/` folder.
-
-3. **Find your computer's LAN IP** (so your tablet can reach it over WiFi):
-   - Windows: `ipconfig` in a terminal, look for IPv4 Address
-   - Mac: System Settings → Network
-
-4. On your tablet, same WiFi network, open Safari/Chrome to:
-   `http://<your-computer's-IP>:8080/`
-
-5. **Add to Home Screen** (iOS Safari: Share → Add to Home Screen) so it launches
-   full-screen without browser chrome eating into the display.
-
-## It just works out of the box
-
-Every transport action wired in this page (play, stop, record, loop/repeat,
-marker navigation, undo, metronome) uses REAPER's **built-in, universal action
-IDs** — the same on every REAPER install, every OS, every version. Nothing to
-re-derive or reconfigure there.
+All the actions it triggers (play/stop, stop, record, repeat, previous/next marker, undo, insert marker, metronome) are **REAPER built-in action IDs**, identical on every REAPER install. Nothing to reconfigure.
 
 ## Customizing
 
-- **Colors**: all defined as CSS variables at the top of `index.html`'s
-  `<style>` block (`--col-record`, `--col-play`, etc). Change the hex values.
-- **Which tracks show**: tap the small gear icon in the top-right corner of
-  the page. It lists whatever tracks actually exist in your current REAPER
-  session (live, real names) and lets you pick up to 10 to display. Your
-  choice is remembered on that device/browser via local storage — no code
-  edits needed session to session.
-- **Layout/corner radii/fonts**: also in the `<style>` block, reasonably
-  commented.
-- **Insert-marker action**: currently set to `40157` ("Markers: Insert marker
-  at current position"), REAPER's standard one. If you use a different
-  marker-insert action, change the `marker` value in the `ACTIONS` object
-  near the bottom of `index.html`.
+- **Colors and look**: each look has its own scoped block in the `<style>` section (`html[data-skin="classic"]`, `"retro"`, `"hifi"`); colors are CSS variables at the top of each block.
+- **Default look**: `classic`; change the fallback in the small script at the top of `<head>`. A `?skin=retro` (or `hifi`, `classic`) in the URL also selects and saves a look.
+- **Insert-marker action**: `ACTIONS.marker` near the bottom of `index.html` (`40157`, "Markers: Insert marker at current position").
+- **Max tracks shown**: `MAX_VISIBLE` (default 10; the layout was designed for up to 10 columns).
 
-## Building your own visual design from scratch
+## Repository contents
 
-If you want a completely different look rather than reusing this one:
+| Path | What |
+|---|---|
+| `index.html` | The whole page, including all three looks |
+| `main.js` | REAPER's own web-remote helper, unmodified |
+| `fonts/` | Roboto Condensed variable WOFF2 (open source) |
+| `Background-Wood.jpg` | Wood texture for the RADIO look |
+| `spec-export.jsx` | Illustrator ExtendScript that exports named layers, groups and text frames to JSON (percent geometry, fill/stroke hex, text and font) |
+| `docs/design/` | The Illustrator mockup exports and the spec JSON the layout was built from |
+| `docs/screenshots/` | Screenshots used above |
+| `docs/DEVELOPMENT_NOTES.md` | Architecture, protocol notes, style specs for each look, and the backlog |
 
-1. Design your layout as an Illustrator mockup, naming every layer/group/text
-   frame exactly as you want it referenced (e.g. `transport-play`, `track-1-meter`).
-2. Run `spec-export.jsx` (File → Scripts → Other Script... in Illustrator) on
-   your `.ai` file. It walks every named layer/group/text frame on the first
-   artboard and exports a JSON file with each one's position (as % of the
-   artboard), fill/stroke color, and text/font info — next to your `.ai` file.
-3. Use that JSON as your build spec to hand-author the HTML/CSS, the same way
-   this page was built.
+## Building your own design
 
-This only gets you geometry and color — gradients, icons, and interaction
-states (pressed/active/flashing) still need to be built by hand in CSS/JS.
+1. Design the layout in Illustrator and name each layer, group and text frame as you want it referenced (for example `transport-play`, `track-1-meter`). Give text frames an explicit name, because Illustrator shows an unnamed text frame's contents in the Layers panel without actually naming it.
+2. Run `spec-export.jsx` (File → Scripts → Other Script...). It writes a JSON file next to your `.ai` with each item's position (percent of the artboard), fill/stroke colour and text/font info. Gradients, spot colours and corner radii are not exported.
+3. Use that JSON as the spec for hand-written HTML/CSS.
 
-## Known limitations (not built yet)
+## Known limitations
 
-- No "disconnected from REAPER" banner if the connection drops.
-- No clip-warning indicator on the meters (REAPER's web protocol gives a
-  peak-level number, but no sticky clip latch — you'd need to build that
-  thresholding yourself in the meter-update JS).
-- No authentication on REAPER's web server — anyone on the same WiFi network
-  who knows the URL can control transport, not just view it. Fine for a home
-  studio or practice space; don't port-forward this to the open internet.
+- No "disconnected from REAPER" banner yet.
+- No clip-warning light. REAPER's web protocol gives a level but no clip flag, so it would need to be latched in JavaScript.
+- No project name display: the web protocol doesn't expose one.
+- No authentication on REAPER's web server: anyone on the same network who knows the URL can control transport. Fine for a home studio. Don't port-forward it to the internet.
+- The HI-FI and RADIO looks use shadows and gradients heavily and have only been checked in a desktop preview with simulated data, not yet on a physical iPad.
+
+Look inspiration came from vintage hi-fi and radio gear. No manufacturer's logos or wordmarks are used.
