@@ -91,4 +91,12 @@ All the actions it triggers (play/stop, stop, record, repeat, previous/next mark
 - No authentication on REAPER's web server: anyone on the same network who knows the URL can control transport. Fine for a home studio. Don't port-forward it to the internet.
 - The HI-FI and RADIO looks use shadows and gradients heavily and have only been checked in a desktop preview with simulated data, not yet on a physical iPad.
 
-Look inspiration came from vintage hi-fi and radio gear. No manufacturer's logos or wordmarks are used.
+## License and credits
+
+This project's own code, docs and tooling are released under the [MIT License](LICENSE) (Copyright (c) 2026 baglunch). Third-party pieces keep their own terms:
+
+- **`main.js`**: REAPER's web-remote helper, provided with REAPER by Cockos Incorporated and included unmodified for convenience. It is not covered by this project's license. You can also copy it from your own REAPER install (`Plugins/reaper_www_root/main.js`).
+- **Roboto Condensed** (`fonts/`): Copyright 2011 Google Inc., licensed under the [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
+- **`Background-Wood.jpg`**: a composited texture assembled from free-to-use sources, used by the RADIO look. Swap in your own image if you like.
+- **Design inspiration**: the looks are inspired by vintage radio and hi-fi gear. No manufacturer logos or wordmarks are used.
+- **Trademarks**: REAPER is a trademark of Cockos Incorporated. This project is unofficial and not affiliated with or endorsed by Cockos.
