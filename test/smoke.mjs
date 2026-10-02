@@ -60,7 +60,9 @@ for (const skin of ['classic', 'retro', 'hifi']) {
   check((await cls('btn-loop')).includes('is-active'), 'loop lit when repeat is on');
   check((await cls('btn-metronome')).includes('is-active'), 'metronome lit from REAPER state');
   check((await page.textContent('#timecode')).trim() === '00:01:23', 'timecode formatted HH:MM:SS from seconds');
-  check(await page.evaluate(() => document.querySelector('.track-meter-fill').style.height) === '50%', 'meter fill: -30 dB is 50%');
+  // columns appear on the first reply; levels arrive on the next poll tick
+  await page.waitForFunction(() => document.querySelector('.track-meter-fill').style.height === '50%');
+  check(true, 'meter fill: -30 dB is 50%');
   check(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.documentElement.scrollHeight <= innerHeight), 'no scrolling at 1180x820');
 
   // every button sends its REAPER action
