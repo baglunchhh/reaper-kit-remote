@@ -1,5 +1,7 @@
 # REAPER Kit Remote
 
+[![CI](https://github.com/baglunchhh/reaper-kit-remote/actions/workflows/ci.yml/badge.svg)](https://github.com/baglunchhh/reaper-kit-remote/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 A glanceable tracking remote for REAPER, built for a tablet mounted at a drum kit. Big transport keys, a metronome toggle, a live timecode and per-track level meters, readable from about three feet away. It is **not a mixer**: no EQ, panning or FX control.
 
 It is a single static web page that talks to REAPER's built-in web server. There is no install, no build step and no extension.
@@ -76,6 +78,25 @@ All the actions it triggers (play/stop, stop, record, repeat, previous/next mark
 | `docs/design/` | The Illustrator mockup exports and the spec JSON the layout was built from |
 | `docs/screenshots/` | Screenshots used above |
 | `docs/DEVELOPMENT_NOTES.md` | Architecture, protocol notes, style specs for each look, and the backlog |
+| `test/` | Static checks and a headless-browser smoke test (run by CI) |
+| `.github/workflows/ci.yml` | GitHub Actions workflow that runs both test suites on every push and pull request |
+| `package.json` | Dev-only: pins Playwright for the tests. The page itself has no dependencies |
+| `LICENSE` | MIT |
+
+## Development and tests
+
+The page is plain HTML/CSS/JS with no build step, so edit `index.html` directly. CI runs on every push and pull request. To run the same checks locally (needs Node 20+):
+
+```
+npm install
+npx playwright install chromium
+npm test
+```
+
+- **Static checks** (`test/static-checks.mjs`): every script parses; every referenced font, image and script exists; nothing is loaded from the internet; all three looks are present; and a privacy scan finds no LAN IP addresses, user-specific file paths or real email addresses in committed text files.
+- **Smoke test** (`test/smoke.mjs`): loads the real page in headless Chromium for each look, answering its REAPER requests with a fake REAPER server so `main.js` and the polling loop genuinely run. It checks the lit states (play, record, loop, metronome), the timecode, the meter fill, that all nine buttons send the right REAPER action IDs, project-tab switching, the refresh button, look switching and persistence, no scrolling, and no console errors.
+
+Not covered: real REAPER, and iPad Safari rendering.
 
 ## Building your own design
 

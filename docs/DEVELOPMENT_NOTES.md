@@ -91,7 +91,7 @@ Paste this into a new chat. It is a glanceable drum-tracking remote for REAPER, 
 ## 7. Backlog and V2
 - **Verify on the real iPad**: `skins.html`, scroll/zoom behavior, wood glare under stage lights, and the refresh button with actual project tabs.
 - Promote `index-skins.html` to the live `index.html` (default CLASSIC). The user was asked and has not answered. Keep `index.html` as a backup first.
-- Update the GitHub/shareable package with the skins, the refresh button, and the README. Make the repo public only when the user says so.
+- ~~Update the GitHub/shareable package~~ DONE: the repo is public, has the skins page, README with screenshots, MIT license and credits, and CI.
 - **DISCONNECTED banner** and **sticky clip-warning light** were deferred to V2 by the user. REAPER gives no clip flag, so latch a threshold of at least 0 dB in JS.
 - **Project name**: no protocol support. Options are manual edit, or a small Lua script writing ExtState that the page reads via `GET/EXTSTATE`. The spot was repurposed for the metronome.
 - Open ideas: remember the track selection per project (e.g. keyed by a track-name signature), a second reserved transport slot (the gap between stop and rewind), a background texture decision, and a Gotham web license.
@@ -102,3 +102,15 @@ Paste this into a new chat. It is a glanceable drum-tracking remote for REAPER, 
 - Headless Brave `--screenshot` hung, so use the preview pane instead.
 - Writing large Python via a bash heredoc broke on quoting. Write the script to a file with the Write tool, then run it.
 - Always set `resize_window` to 1180x820 for screenshots and reset it to `desktop` afterwards.
+
+## 9. Repo, CI and licensing (added after section 8)
+- The repo is **public** (MIT). Its commit history uses GitHub's private noreply address; the history was rewritten once to remove an incorrect email, so never use a personal email for commits.
+- **CI** (`.github/workflows/ci.yml`, Node 20, Playwright 1.49.1) runs on every push and pull request:
+  - `test/static-checks.mjs`: scripts parse, assets exist, no external resources, all looks present, and a privacy scan (LAN IPs, user paths, emails).
+  - `test/smoke.mjs`: headless Chromium plus a fake REAPER server via request interception; covers lit states, timecode, meters, all nine action IDs, project-tab switching, refresh, look switching and persistence, no scrolling, and no console errors.
+  - Last verified run: 86 checks passed, 0 failed.
+  - Gap: no real REAPER and no iPad Safari coverage.
+- Note for the tests: columns are drawn on the first poll reply and meter levels arrive one poll tick (about 100 ms) later, so tests must wait for fill heights.
+- Licensing: MIT for project code; credits section in the README covers `main.js` (Cockos, unmodified), Roboto Condensed (Apache 2.0, Google), the wood texture (the owner states it is a free composite) and a trademark notice.
+- Known CI warning (not a failure): GitHub reports Node 20 as deprecated for `actions/checkout@v4` and `actions/setup-node@v4`; bump the action versions when convenient.
+- To run locally (needs Node 20+): `npm install`, `npx playwright install chromium`, `npm test`.
