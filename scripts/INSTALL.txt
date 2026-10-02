@@ -1,0 +1,56 @@
+REAPER Kit Remote @@VERSION@@
+=======================
+
+A glanceable drum-tracking remote for REAPER, for a tablet at the kit:
+transport keys, metronome toggle, live timecode and per-track meters.
+Three looks: CLASSIC (black), RADIO, HI-FI. Not a mixer.
+
+INSTALL (about 2 minutes)
+-------------------------
+1. In REAPER: Options > Preferences > Control/OSC/Web > Add > "Web browser
+   interface". Pick a port (8080 is the usual) and set the default page to
+   index.html.
+
+2. Find your REAPER resource path: Options > "Show REAPER resource path in
+   explorer/finder". Open its reaper_www_root folder (create it if missing).
+
+3. Copy the CONTENTS of the "reaper_www_root" folder from this download into
+   that folder: index.html, main.js, Background-Wood.jpg and the fonts folder.
+   NOTE: if you already have your own index.html there, back it up first, as
+   this will replace it.
+
+4. Find your computer's LAN IP (Windows: run "ipconfig"; Mac: System Settings >
+   Network).
+
+5. On your tablet or phone, on the same WiFi, open:
+       http://<your-computer's-IP>:8080/
+   On iPad: Share > Add to Home Screen, then launch from the icon for a
+   full-screen display.
+
+USING IT
+--------
+- Tap the gear icon (top right) to pick a LOOK, choose which tracks to show
+  (up to 10), or refresh the track list after switching REAPER project tabs.
+- Every action it triggers is a built-in REAPER action, so no setup is needed.
+
+SECURITY NOTE
+-------------
+REAPER's web server has no password. Anyone on your network who knows the
+address can control transport. Fine for a home studio; do not expose it to the
+internet.
+
+WHAT'S IN THIS DOWNLOAD
+-----------------------
+reaper_www_root/index.html   the remote (all three looks)
+reaper_www_root/main.js      REAPER's own web-remote helper, unmodified
+reaper_www_root/fonts/       Roboto Condensed (Apache License 2.0)
+reaper_www_root/Background-Wood.jpg   texture for the RADIO look
+extras/spec-export.jsx       optional: Illustrator script for building your own design
+LICENSE                      MIT (applies to this project's own code)
+
+Source, screenshots, tests and full docs:
+https://github.com/baglunchhh/reaper-kit-remote
+
+REAPER is a trademark of Cockos Incorporated. This project is unofficial and
+not affiliated with or endorsed by Cockos. main.js is provided with REAPER by
+Cockos and is not covered by this project's license.

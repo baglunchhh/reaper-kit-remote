@@ -2,6 +2,8 @@
 
 [![CI](https://github.com/baglunchhh/reaper-kit-remote/actions/workflows/ci.yml/badge.svg)](https://github.com/baglunchhh/reaper-kit-remote/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
+**[Download the latest release](https://github.com/baglunchhh/reaper-kit-remote/releases/latest)**: unzip it and follow `INSTALL.txt` (about 2 minutes). No need to clone the repo.
+
 A glanceable tracking remote for REAPER, built for a tablet mounted at a drum kit. Big transport keys, a metronome toggle, a live timecode and per-track level meters, readable from about three feet away. It is **not a mixer**: no EQ, panning or FX control.
 
 It is a single static web page that talks to REAPER's built-in web server. There is no install, no build step and no extension.
@@ -50,6 +52,8 @@ HI-FI idle (nothing lit) and the settings panel in each look:
 
 ## Setup
 
+The easiest route is the [latest release](https://github.com/baglunchhh/reaper-kit-remote/releases/latest) zip, which contains a ready-to-copy `reaper_www_root` folder and an `INSTALL.txt`. The manual steps are:
+
 1. **Enable REAPER's web control surface** (if not already on): Options → Preferences → Control/OSC/Web → Add → "Web browser interface". Pick a port (8080 is the usual) and set the default page to `index.html`.
 2. **Copy these into your REAPER resource path's `reaper_www_root` folder** (Options → "Show REAPER resource path in explorer/finder"):
    - `index.html`, `main.js`, the `fonts/` folder, and `Background-Wood.jpg` (only the RADIO look uses it).
@@ -82,6 +86,8 @@ All the actions it triggers (play/stop, stop, record, repeat, previous/next mark
 | `.github/workflows/ci.yml` | GitHub Actions workflow that runs both test suites on every push and pull request |
 | `package.json` | Dev-only: pins Playwright for the tests. The page itself has no dependencies |
 | `LICENSE` | MIT |
+| `scripts/` | `package-release.sh` builds the release zip; `INSTALL.txt` is the install guide shipped inside it |
+| `.github/workflows/release.yml` | Tests, packages and publishes a GitHub Release when a `v*` tag is pushed |
 
 ## Development and tests
 
@@ -97,6 +103,17 @@ npm test
 - **Smoke test** (`test/smoke.mjs`): loads the real page in headless Chromium for each look, answering its REAPER requests with a fake REAPER server so `main.js` and the polling loop genuinely run. It checks the lit states (play, record, loop, metronome), the timecode, the meter fill, that all nine buttons send the right REAPER action IDs, project-tab switching, the refresh button, look switching and persistence, no scrolling, and no console errors.
 
 Not covered: real REAPER, and iPad Safari rendering.
+
+## Releasing
+
+Releases are automatic. Push a version tag and the Release workflow runs the full test suite, builds `reaper-kit-remote-<version>.zip` plus a SHA-256 checksum with `scripts/package-release.sh`, and publishes them as a GitHub Release (with generated notes). If any test fails, nothing is published.
+
+```
+git tag v1.1.0
+git push origin v1.1.0
+```
+
+To try the packaging without publishing, run the "Release" workflow manually from the Actions tab; it uploads the zip as a build artifact instead.
 
 ## Building your own design
 
